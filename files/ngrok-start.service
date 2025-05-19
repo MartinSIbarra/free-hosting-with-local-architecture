@@ -1,0 +1,14 @@
+[Unit]
+Description=Start ngrok tunnel
+After=network.target
+
+[Service]
+Type=simple
+User=${USER}
+EnvironmentFile=${HOME}/.config/devops.env
+ExecStart=${HOME}/bin/${NGROK_START_SCRIPT_NAME}
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
