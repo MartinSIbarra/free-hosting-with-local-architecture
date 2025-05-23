@@ -74,9 +74,8 @@ def get_bridge_interface(os)
     bridge_interface = line.split[1].strip if line  # Ejemplo: "interface: en0"
     
   else # windows
-    output = `ipconfig`
-    line = output.lines.find { |l| l.include?('Adaptador') }
-    bridge_interface = line.split(':')[0].strip if line  # Toma el nombre del adaptador antes de ":"
+    output = `powershell -Command "(Get-NetIPConfiguration | Where-Object { $_.IPv4DefaultGateway -ne $null }).InterfaceDescription"`
+    bridge_interface = output.strip
   end
 
   if bridge_interface.nil? || bridge_interface.empty?
