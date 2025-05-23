@@ -1,6 +1,6 @@
 #!/bin/bash
 # Seteo de url para el repositorio remote de los scripts
-remote_repo="https://raw.githubusercontent.com/MartinSIbarra/localhost-configs/refs/heads/main/files"
+remote_repo="https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/main/files"
 export REMOTE_REPO=$remote_repo
 
 # Valores por defecto

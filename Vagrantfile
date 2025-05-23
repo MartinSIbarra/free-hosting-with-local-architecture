@@ -1,8 +1,8 @@
+# Direccion del repositorio remoto para la creacion de vagrant
+remote_repo = "https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/main/files"
+
 load './provision_scripts.rb'
 load './helpers.rb'
-
-# Direccion del repositorio remoto para la creacion de vagrant
-remote_repo = "https://raw.githubusercontent.com/MartinSIbarra/localhost-configs/refs/heads/main/files"
 
 # Configuración de maquina vagrant para la distintos entornos
 servers = {
