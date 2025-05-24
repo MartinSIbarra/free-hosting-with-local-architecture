@@ -50,7 +50,7 @@ echo "🔧 > Configurando locales es_AR.UTF-8 y lenguaje en_US.UTF-8..."
     if ! grep -q "^es_AR.UTF-8 UTF-8" /etc/locale.gen; then
         echo "es_AR.UTF-8 UTF-8" | sudo tee -a /etc/locale.gen
     fi
-    sudo locale-gen es_AR.UTF-8
+    sudo locale-gen es_AR.UTF-8 en_US.UTF-8
     sudo update-locale
     REMOTE_LOCALE_VARS=$REMOTE_REPO/locale.env
     echo "REMOTE_LOCALE_VARS: $REMOTE_LOCALE_VARS"
