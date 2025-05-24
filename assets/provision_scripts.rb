@@ -1,19 +1,19 @@
 def accesorios()
   return <<-SHELL
     echo "🔧 > Actualizando el Package Manager..."
-      apt-get update
-      apt-get upgrade -y
-    echo "✅ > Package Manager actualizado."
-    echo "🔧 > Instalando Accesorios..."
+      sudo apt update
+      sudo apt upgrade -y
+      echo "✅ > Package Manager actualizado."
+      echo "🔧 > Instalando Accesorios..."
       sudo apt-get install -y curl
-    echo "✅ > Accesorios instalados."
-  SHELL
-end
-
-def virtualbox_ga() 
-  return <<-SHELL
-    echo "🔧 > Instalando Virtual Box Guest Additions..."
-      sudo apt-get install -y build-essential dkms linux-headers-$(uname -r | rev | cut -d'-' -f1 | rev) busybox
+      echo "✅ > Accesorios instalados."
+      SHELL
+    end
+    
+    def virtualbox_ga() 
+      return <<-SHELL
+      echo "🔧 > Instalando Virtual Box Guest Additions..."
+      sudo apt install -y build-essential dkms linux-image-amd64 linux-headers-amd64 busybox virtualbox-guest-dkms virtualbox-guest-x11 virtualbox-guest-utils
       sudo mkdir -p /mnt/cdrom
       sudo mount /dev/sr0 /mnt/cdrom
       sudo /mnt/cdrom/VBoxLinuxAdditions.run 2>&1 || true
