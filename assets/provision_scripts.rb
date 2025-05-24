@@ -1,24 +1,39 @@
+def configuracion_inicial()
+  return <<-SHELL
+    echo "🔧 > Actualizando el Package Manager e instalando escenciales..."
+    sudo apt update
+    sudo apt upgrade -y
+    sudo apt install -y build-essential dkms busybox linux-headers-$(uname -r)
+    echo "✅ > Package Manager actualizado."
+    echo "🔧 > Configurando locales..."
+    # Descomentar es_AR.UTF-8 si está comentada en /etc/locale.gen
+    sudo sed -i '/es_AR.UTF-8/s/^# //g' /etc/locale.gen
+    sudo locale-gen es_AR.UTF-8 en_US.UTF-8 # Generar los locales
+    # Establecer los locales predeterminados del sistema
+    sudo update-locale LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=es_AR.UTF-8 LC_NUMERIC=es_AR.UTF-8 LC_TIME=es_AR.UTF-8 LC_MONETARY=es_AR.UTF-8 LC_PAPER=es_AR.UTF-8 LC_NAME=es_AR.UTF-8 LC_ADDRESS=es_AR.UTF-8 LC_TELEPHONE=es_AR.UTF-8 LC_MEASUREMENT=es_AR.UTF-8 LC_IDENTIFICATION=es_AR.UTF-8
+    echo "✅ > Locales configurados."
+  SHELL
+end
+
 def accesorios()
   return <<-SHELL
-    echo "🔧 > Actualizando el Package Manager..."
-      sudo apt update
-      sudo apt upgrade -y
-      echo "✅ > Package Manager actualizado."
-      echo "🔧 > Instalando Accesorios..."
-      sudo apt-get install -y curl
-      echo "✅ > Accesorios instalados."
-      SHELL
-    end
+    echo "🔧 > Instalando Accesorios..."
+    sudo apt-get install -y curl
+    echo "✅ > Accesorios instalados."
+    SHELL
+  end
     
-    def virtualbox_ga() 
-      return <<-SHELL
-      echo "🔧 > Instalando Virtual Box Guest Additions..."
-      sudo apt install -y build-essential dkms linux-image-amd64 linux-headers-amd64 busybox virtualbox-guest-dkms virtualbox-guest-x11 virtualbox-guest-utils
-      sudo mkdir -p /mnt/cdrom
-      sudo mount /dev/sr0 /mnt/cdrom
-      sudo /mnt/cdrom/VBoxLinuxAdditions.run 2>&1 || true
-      sudo /sbin/rcvboxadd reload || \
-      (
+def virtualbox_ga() 
+  return <<-SHELL
+    echo "🔧 > Instalando Virtual Box Guest Additions..."
+    sleep 10
+    sudo mkdir -p /mnt/cdrom
+    sudo mount /dev/sr0 /mnt/cdrom || (echo "No se pudo montar /dev/sr0. Verifique si la ISO está adjunta o si la ruta es correcta." && exit 1)
+   
+    sudo /mnt/cdrom/VBoxLinuxAdditions.run 2>&1 || true
+
+    sudo umount /mnt/cdrom || echo "No se pudo desmontar /mnt/cdrom. Puede requerir un reinicio."
+    (
     echo "✅ > Virtual Box Guest Additions instalados."
     echo "⚠️ Para aplicar los cambios en la ejecucion de la maquina virtual, es necesario"
     echo "   reiniciar la maquina virtual de vagran 2 veces."
