@@ -1,7 +1,30 @@
 # Direccion del repositorio remoto para la creacion de vagrant
-remote_repo = "https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/main/files"
+remote_repo = "https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/main/assets"
 
+require 'open-uri'
+
+def download_file(url, file)
+  unless File.exist?(file)
+    remote_file = "#{url}/#{file}"
+    10.times do |i|
+      begin
+        puts "Intento #{i+1}/10..."
+        URI.open(remote_file, read_timeout: 10) { |r| File.write(file, r.read) }
+        puts "'Archivo #{file}', descargado exitosamente."; break
+      rescue => e
+        puts "Error: #{e.message}"
+        if i < 9 then sleep 5 else abort "Falló tras 10 intentos." end
+      end
+    end
+  else
+    puts "El archivo '#{file}' ya existe."
+  end
+end
+
+download_file(remote_repo, "provision_scripts.rb")
 load './provision_scripts.rb'
+
+download_file(remote_repo, "helpers.rb")
 load './helpers.rb'
 
 # Configuración de maquina vagrant para la distintos entornos
@@ -9,21 +32,21 @@ servers = {
   "devops-server" => { 
     server_type: "devops",
     name: "DevOps",
-    ip: "192.168.0.1", 
+    ip: "192.168.0.170", 
     ssh_port: 2230,
     tunnel_config_required: true
   },
   "prod-server" => {
     server_type: "prod",
     name: "Producción",
-    ip: "192.168.0.2", 
+    ip: "192.168.0.171", 
     ssh_port: 2231,
     tunnel_config_required: false
   },
   "uat-server" => {
     server_type: "uat",
     name: "UAT",
-    ip: "192.168.0.3", 
+    ip: "192.168.0.172", 
     ssh_port: 2232,
     tunnel_config_required: false
   }
