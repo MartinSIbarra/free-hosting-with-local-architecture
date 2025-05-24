@@ -3,7 +3,7 @@ def configuracion_inicial()
     echo "🔧 > Actualizando el Package Manager e instalando escenciales..."
     sudo apt update
     sudo apt upgrade -y
-    sudo apt install -y build-essential dkms busybox linux-headers-$(uname -r)
+    sudo apt install -y build-essential dkms busybox linux-headers-amd64
     echo "✅ > Package Manager actualizado."
     echo "🔧 > Configurando locales..."
     # Descomentar es_AR.UTF-8 si está comentada en /etc/locale.gen

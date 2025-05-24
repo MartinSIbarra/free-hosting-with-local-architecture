@@ -7,7 +7,7 @@ echo "✅ > Package Manager actualizado."
 echo "🔧 > Instalando Paquetes y dependencias..."
     sudo apt-get install -y \
         apt-transport-https ca-certificates gnupg2 software-properties-common locales gettext \
-        build-essential dkms linux-headers-$(uname -r) curl busybox git vim wget unzip
+        build-essential dkms linux-headers-amd64 curl busybox git vim wget unzip
 echo "✅ > Paquetes y dependencias instalados."
 
 echo "🔧 > Agregado carpetas de configuraciones, logs y ejecutables..."
