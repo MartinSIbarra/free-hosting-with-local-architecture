@@ -81,8 +81,8 @@ Vagrant.configure("2") do |config|
 
   #Aprovisionamiento de la maquina virtual con lo minimo
   config.vm.provision "init", type: "shell", inline: configuracion_inicial()
-  config.vm.provision "post1", type: "shell", inline: accesorios()
-  config.vm.provision "post2", type: "shell", inline: virtualbox_ga()
+  config.vm.provision "post1", type: "shell", run: "never", inline: accesorios()
+  config.vm.provision "post2", type: "shell", run: "never", inline: virtualbox_ga()
   #Aprovisionamiento de la maquina virtual con el script para la configuracion para el servidor
-  config.vm.provision "post3", type: "shell", inline: remote_provision_script(remote_repo, servers[host][:server_type], ngrok_data[:ngrok_auth_token], ngrok_data[:ngrok_tunnel_url])
+  config.vm.provision "post3", type: "shell", run: "never", inline: remote_provision_script(remote_repo, servers[host][:server_type], ngrok_data[:ngrok_auth_token], ngrok_data[:ngrok_tunnel_url])
 end

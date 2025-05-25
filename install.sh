@@ -90,7 +90,7 @@ execute_command() {
     done
 }
 
-mkdir "$server_path"
+mkdir -p "$server_path"
 cd "$server_path" 
 ngrok_config_file="ngrok.conf"
 if [[ $option == "1" ]]; then
