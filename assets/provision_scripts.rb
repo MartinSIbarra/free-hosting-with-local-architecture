@@ -47,12 +47,12 @@ def remote_provision_script(remote_repo, server_type, ngrok_auth_token, ngrok_tu
   return <<-SHELL
     MAX_RETRIES=10
     RETRY_DELAY=5
+    ATTEMPT=1
     LOG_DIR="$/home/vagrant/logs"
     TMP_DIR="$/home/vagrant/tmp"
     SCRIPT_NAME="provision"
     LOG_FILE="$LOG_DIR/$SCRIPT_NAME-download.log"
     SCRIPT_FILE="$TMP_DIR/tmp_script.sh"
-    ATTEMPT=1
     REMOTE_REPO="#{remote_repo}"
 
     su - vagrant -c "mkdir -p $LOG_DIR $TMP_DIR"

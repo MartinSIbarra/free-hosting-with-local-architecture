@@ -16,8 +16,6 @@ def download_file(url, file)
         if i < 9 then sleep 5 else abort "Falló tras 10 intentos." end
       end
     end
-  else
-    puts "El archivo '#{file}' ya existe."
   end
 end
 
@@ -84,9 +82,9 @@ Vagrant.configure("2") do |config|
   end
 
   #Aprovisionamiento de la maquina virtual con lo minimo
-  config.vm.provision "shell", inline: configuracion_inicial()
-  config.vm.provision "shell", inline: accesorios()
-  config.vm.provision "shell", inline: virtualbox_ga()
+  config.vm.provision "init", type: "shell", inline: configuracion_inicial()
+  config.vm.provision "post1", type: "shell", inline: accesorios()
+  config.vm.provision "post2", type: "shell", inline: virtualbox_ga()
   #Aprovisionamiento de la maquina virtual con el script para la configuracion para el servidor
-  config.vm.provision "shell", inline: remote_provision_script(remote_repo, servers[host][:server_type], ngrok_data[:ngrok_auth_token], ngrok_data[:ngrok_tunnel_url])
+  config.vm.provision "post3", type: "shell", inline: remote_provision_script(remote_repo, servers[host][:server_type], ngrok_data[:ngrok_auth_token], ngrok_data[:ngrok_tunnel_url])
 end
