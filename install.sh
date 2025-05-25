@@ -91,7 +91,7 @@ execute_command() {
 
 echo "  Instalando $server_label..."
 echo ""
+mkdir "$server_folder"
+cd "$server_folder" 
 execute_command "curl -sSOfL https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/main/assets/Vagrantfile"
-mkdir $server_folder
-cd $server_folder 
 vagrant up && vagrant reload --provision-with post1,post2,post3
