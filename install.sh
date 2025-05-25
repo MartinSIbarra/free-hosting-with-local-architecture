@@ -1,19 +1,19 @@
 #!/bin/bash
 
 show_menu=true 
-opcion=""
-server_folder=""
+option=""
+server_path=""
 server_label=""
+devops_server_label="DevOps Server"
+prod_server_label="Production Server"
+uat_server_label="UAT Server"
 
 while [[ "$show_menu" == true ]]; do
-    devops_server_label="DevOps Server"
-    prod_server_label="Production Server"
-    uat_server_label="UAT Server"
     clear
     echo "___________________________________________________________"
     echo ""
-    echo " Bienvenido al menú de instalación de servidores virtuales "
-    echo " Seleccione una opción para continuar, se generará una "
+    echo " Bienvenido al menú de instalación de servidores virtuales"
+    echo " Selecciona una opción para continuar, se generará una "
     echo " máquina virtual con Vagrant y VirtualBox "
     echo "___________________________________________________________"
     echo ""
@@ -36,32 +36,33 @@ while [[ "$show_menu" == true ]]; do
         1|2|3)
             case "$input" in
                 1) 
-                    server_folder="devops-server" 
+                    server_path="devops-server" 
                     server_label="$devops_server_label"
                     ;;
                 2) 
-                    server_folder="prod-server" 
+                    server_path="prod-server" 
                     server_label="$prod_server_label"
                     ;;
                 3) 
-                    server_folder="uat-server" 
+                    server_path="uat-server" 
                     server_label="$uat_server_label"
                     ;;
             esac
 
             echo -e "\n  Has elegido la opción $input - $server_label"
 
-            if [[ -d "$server_folder" ]]; then
-                echo "  Ya existe la máquina virtual para esta opcion, no se puede crear."
+            if [[ -f "$server_path/Vagrantfile
+            " ]]; then
+                echo "  Ya existe la máquina virtual para esta option, no se puede crear."
                 echo "  Presiona cualquier tecla para volver al menú."
-                read -rsn1 confirm
+                read -rsn1
             else
                 echo "  Presiona Enter para confirmar ó ESC para volver al menú."
 
                 while true; do
                     read -rsn1 confirm
                     if [[ "$confirm" == "" ]]; then  # Enter = confirmar
-                        opcion="$input"
+                        option="$input"
                         show_menu=false
                         break
                     elif [[ "$confirm" == $'\x1b' ]]; then  # ESC = volver
@@ -73,7 +74,7 @@ while [[ "$show_menu" == true ]]; do
     esac
 done
 
-# Acción tras confirmar
+# Helper para ejecutar comandos con reintentos, se utiliza para curl por timeout
 execute_command() {
     max_retries=10
     retry_delay=5
@@ -89,9 +90,27 @@ execute_command() {
     done
 }
 
+mkdir "$server_path"
+cd "$server_path" 
+ngrok_config_file="ngrok.conf"
+if [[ $option == "1" ]]; then
+    if [ ! -f "$ngrok_config_file" ]; then
+        echo "AUTH_TOKEN=<su_token_de_ngrok>" > "$ngrok_config_file"
+        echo "TUNNEL_URL=<su_url_de_ngrok>" >> "$ngrok_config_file"
+        echo ""
+        echo "  Se creó el archivo de configuración de ngrok: $server_path/$ngrok_config_file"
+        echo "  Editá el archivo y agregá tu token de ngrok y la URL del túnel."
+        echo "  Luego debes volver a ejecutar este script."
+        echo "  Tené en cuenta que si se realiza la instalacion del servidor de DevOps"
+        echo "  sin agregar el token y URL el sevidor de DevOps no funcionará correctamente."
+        echo -e "\n  Presione cualquier tecla para continuar..."
+        read -rsn1
+        echo ""
+        exit 0
+    fi
+fi
+
+execute_command "curl -sSOfL https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/main/assets/Vagrantfile"
 echo "  Instalando $server_label..."
 echo ""
-mkdir "$server_folder"
-cd "$server_folder" 
-execute_command "curl -sSOfL https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/main/assets/Vagrantfile"
 vagrant up && vagrant reload --provision-with post1,post2,post3

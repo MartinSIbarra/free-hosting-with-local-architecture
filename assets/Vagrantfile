@@ -8,9 +8,7 @@ def download_file(url, file)
     remote_file = "#{url}/#{file}"
     10.times do |i|
       begin
-        puts "Intento #{i+1}/10..."
         URI.open(remote_file, read_timeout: 10) { |r| File.write(file, r.read) }
-        puts "'Archivo #{file}', descargado exitosamente."; break
       rescue => e
         puts "Error: #{e.message}"
         if i < 9 then sleep 5 else abort "Falló tras 10 intentos." end
