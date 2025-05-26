@@ -1,44 +1,48 @@
 # Free Hosting with Local Architecture
+
 ## Índice
-- [Objetivo](##Objetivo.)
-- [Pre-requisitos](##Pre-requisitos.)
-- [Instalación](##Instalación.)
+- [Objetivo](#objetivo)
+- [Pre-requisitos](#pre-requisitos)
+- [Instalación](#instalación)
 
+## Objetivo
+El proyecto tiene como objetivo facilitar la creación de servidores para hosting de aplicaciones web. Utiliza **Vagrant** para crear máquinas virtuales: **DevOps**, **Production** y **UAT**, cada una con su propósito:
 
-## Objetivo.
-El proyecto tiene como objetivo el facilitar la creación de servidores para hosting de aplicaciones webs, utiliza Vagrant para crear maquinas virtuales DevOps, Production y UAT. Cada una de ellas con su proposito.
-- La maquina de **DevOps** tiene como objetivo exponer la aplicación web ejecutada por la maquina **Production** usando ngrok y nginx. Tambien expone la aplicacion web ejecutada por la maquina **UAT**.
-- La maquina de **Production** es la encargada de ejecutar la aplicación web que se expondra a internet.
-- La maquina de **UAT** es la encargada de ejecutar la aplicación web de ambiente pre-productivo para pruebas de usuario.
+- La máquina **DevOps** tiene como objetivo exponer la aplicación web ejecutada por la máquina **Production** usando **ngrok** y **nginx**. También expone la aplicación web ejecutada por la máquina **UAT**.
+- La máquina **Production** es la encargada de ejecutar la aplicación web que se expondrá a internet.
+- La máquina **UAT** es la encargada de ejecutar la aplicación web del ambiente pre-productivo para pruebas de usuario.
 
-## Pre-requisitos.
-La solución funciona con **Vagrant** y **Virtual Box**, para lo cual es necesario tenerlos instalados en el sistema. Tambien será necesario **curl** (opcional) para la descarga de los archivos de instalación. También para la utilización de la maquina de DevOps sera necesario una cuenta en **Ngrok**.
-- ### General.
-  - #### [Instalar Virtual Box](https://www.virtualbox.org/wiki/Downloads)
-  - #### [Instalar Vagrant](https://developer.hashicorp.com/vagrant/install)
+## Pre-requisitos
+La solución funciona con **Vagrant** y **VirtualBox**, por lo que es necesario tenerlos instalados en el sistema. También será necesario **curl** (opcional) para la descarga de los archivos de instalación. Además, para la utilización de la máquina **DevOps** será necesaria una cuenta en **Ngrok**.
 
-- ### Accesorios.
-  - #### Instalar curl (solo Linux).
-    ```Bash
-    sudo apt update && sudo apt install -y curl
-    ```
+### General
+- #### [Instalar VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+- #### [Instalar Vagrant](https://developer.hashicorp.com/vagrant/install)
 
-- ### DevOps Server.
-  Para su funcionamiento el servidor de dev ops requiere un token de ngrok y un dominio. Ambos se puden obtener de forma gratuita luego de registrarse.
-  - #### [Ngrok](https://ngrok.com/)
-
-
-## Instalación.
-El repositorio cuenta con un instalable para **Linux** y **Windows**, que permite automatizar el proceso de instación, solo para la maquina de DevOps es necesario hacer un paso intermedio para configurar Ngrok.
-
-- ### Linux.
-  Copiar y pegar el siguiente comando en la terminal. Antes de ejecutar debe modiifcar ***"/ruta/donde/guardar"*** por la ruta deseada para descargar el archivo. Este comando descargará el archivo "install.sh" y lo ejecutará para comenzar con la instalación de los servidores.
-  ```Bash
-  destino="/ruta/donde/guardar"; curl -o "$destino/install.sh" https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/main/install.sh && chmod +x "$destino/install.sh" && "$destino/install.sh"
+### Accesorios
+- #### Instalar curl (solo Linux)
+  ```bash
+  sudo apt update && sudo apt install -y curl
   ```
 
-- ### Windows.
-  Copiar y pegar el siguiente comando en la terminal. Antes de ejecutar debe modiifcar ***"C:\Ruta\Donde\Guardar"*** por la ruta deseada para descargar el archivo. Este comando descargará el archivo "install.ps1" y lo ejecutará para comenzar con la instalación de los servidores.
-  ```PowerShell
-  $destino="C:\Ruta\Donde\Guardar"; Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/main/install.ps1" -OutFile "$destino\install.ps1"; & "$destino\install.ps1"
-  ```
+### DevOps Server
+Para su funcionamiento, el servidor DevOps requiere un token de **ngrok** y un dominio. Ambos se pueden obtener de forma gratuita luego de registrarse.
+
+- #### [Ngrok](https://ngrok.com/)
+
+## Instalación
+El repositorio cuenta con un instalador para **Linux** y **Windows**, que permite facilitar el proceso de instalación con una interfaz de usuario. Solo para la máquina **DevOps** es necesario realizar un paso intermedio para configurar **ngrok**.
+
+### Linux
+Copiar y pegar el siguiente comando en la terminal. Antes de ejecutarlo, debe modificar `"/ruta/donde/guardar"` por la ruta deseada para descargar el archivo. Este comando descargará el archivo `install.sh` y lo ejecutará para comenzar con la instalación de los servidores.
+
+```bash
+destino="/ruta/donde/guardar"; curl -o "$destino/install.sh" https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/main/install.sh && chmod +x "$destino/install.sh" && "$destino/install.sh"
+```
+
+### Windows
+Copiar y pegar el siguiente comando en la terminal. Antes de ejecutarlo, debe modificar `"C:\Ruta\Donde\Guardar"` por la ruta deseada para descargar el archivo. Este comando descargará el archivo `install.ps1` y lo ejecutará para comenzar con la instalación de los servidores.
+
+```powershell
+$destino="C:\Ruta\Donde\Guardar"; Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/main/install.ps1" -OutFile "$destino\install.ps1"; & "$destino\install.ps1"
+```
