@@ -1,130 +1,111 @@
-# Define las etiquetas
-$devopsLabel = "DevOps Server"
-$prodLabel = "Production Server"
-$uatLabel = "UAT Server"
+# PowerShell Script: install-server.ps1
 
 $showMenu = $true
 $option = ""
 $serverPath = ""
 $serverLabel = ""
+$devopsServerLabel = "DevOps Server"
+$prodServerLabel = "Production Server"
+$uatServerLabel = "UAT Server"
 
 function Show-Menu {
     Clear-Host
-    Write-Host "___________________________________________________________`n"
+    Write-Host "___________________________________________________________"
+    Write-Host ""
     Write-Host " Bienvenido al menú de instalación de servidores virtuales"
-    Write-Host " Selecciona una opción para continuar, se generará una"
-    Write-Host " máquina virtual con Vagrant y VirtualBox"
-    Write-Host "___________________________________________________________`n"
-    Write-Host "  1) $devopsLabel"
-    Write-Host "  2) $prodLabel"
-    Write-Host "  3) $uatLabel"
+    Write-Host " Selecciona una opción para continuar, se generará una "
+    Write-Host " máquina virtual con Vagrant y VirtualBox "
+    Write-Host "___________________________________________________________"
+    Write-Host ""
+    Write-Host "  1) $devopsServerLabel"
+    Write-Host "  2) $prodServerLabel"
+    Write-Host "  3) $uatServerLabel"
     Write-Host ""
     Write-Host "  0) Salir"
     Write-Host ""
     Write-Host "  Selecciona una opción (1-3) o 0 para salir:"
 }
 
-function Wait-For-Key {
-    $key = $null
-    while ($null -eq $key) {
-        $key = [System.Console]::ReadKey($true)
-    }
-    return $key
-}
-
 function Execute-Command($command) {
     $maxRetries = 10
     $retryDelay = 5
     $attempt = 1
-    while ($attempt -le $maxRetries) {
+    while ($true) {
         try {
             Invoke-Expression $command
-            return
+            break
         } catch {
-            if ($attempt -eq $maxRetries) {
-                Write-Host "[ERROR] Falló tras $maxRetries intentos. Abortando."
+            if ($attempt -ge $maxRetries) {
+                Write-Host "[$(Get-Date)] Fallo tras $maxRetries intentos. Abortando."
                 exit 1
             }
-            Start-Sleep -Seconds $retryDelay
             $attempt++
+            Start-Sleep -Seconds $retryDelay
         }
     }
 }
 
 while ($showMenu) {
     Show-Menu
-    $key = Wait-For-Key
-    $input = $key.KeyChar
+    $input = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown").Character
 
     switch ($input) {
         '0' {
-            Write-Host "`nSaliendo..."
-            exit 0
+            Write-Host "`n  Saliendo..."
+            exit
         }
-        '1' {
-            $serverPath = "devops-server"
-            $serverLabel = $devopsLabel
-        }
-        '2' {
-            $serverPath = "prod-server"
-            $serverLabel = $prodLabel
-        }
-        '3' {
-            $serverPath = "uat-server"
-            $serverLabel = $uatLabel
-        }
-        default {
-            continue
-        }
+        '1' { $serverPath = "devops-server"; $serverLabel = $devopsServerLabel }
+        '2' { $serverPath = "prod-server"; $serverLabel = $prodServerLabel }
+        '3' { $serverPath = "uat-server"; $serverLabel = $uatServerLabel }
+        default { continue }
     }
 
     Write-Host "`n  Has elegido la opción $input - $serverLabel"
 
-    $vagrantFilePath = Join-Path $serverPath "Vagrantfile"
-    if (Test-Path $vagrantFilePath) {
-        Write-Host "  Ya existe la máquina virtual para esta opción. No se puede crear."
+    if (Test-Path "$serverPath/Vagrantfile") {
+        Write-Host "  Ya existe la máquina virtual para esta opción, no se puede crear."
         Write-Host "  Presiona cualquier tecla para volver al menú."
-        Wait-For-Key | Out-Null
+        $null = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
         continue
-    } else {
-        Write-Host "  Presiona Enter para confirmar o Esc para volver al menú."
-        while ($true) {
-            $confirmKey = Wait-For-Key
-            if ($confirmKey.Key -eq 'Enter') {
-                $option = $input
-                $showMenu = $false
-                break
-            } elseif ($confirmKey.Key -eq 'Escape') {
-                break
-            }
+    }
+
+    Write-Host "  Presiona Enter para confirmar ó ESC para volver al menú."
+
+    while ($true) {
+        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        if ($key.VirtualKeyCode -eq 13) { # Enter
+            $option = $input
+            $showMenu = $false
+            break
+        } elseif ($key.VirtualKeyCode -eq 27) { # ESC
+            break
         }
     }
 }
 
-# Validación para DevOps Server: crear ngrok.conf si no existe
-if ($option -eq '1') {
-    $ngrokConfigFile = Join-Path $serverPath "ngrok.conf"
+New-Item -ItemType Directory -Force -Path $serverPath | Out-Null
+Set-Location -Path $serverPath
+
+$ngrokConfigFile = "ngrok.conf"
+if ($option -eq "1") {
     if (-not (Test-Path $ngrokConfigFile)) {
-        New-Item -Path $ngrokConfigFile -ItemType File -Force | Out-Null
-        Set-Content -Path $ngrokConfigFile -Value @"
-AUTH_TOKEN=<su_token_de_ngrok>
-TUNNEL_URL=<su_url_de_ngrok>
-"@
-        Write-Host "`n  Se creó el archivo de configuración: $ngrokConfigFile"
-        Write-Host "  Editá el archivo y agregá tu token y URL de ngrok."
-        Write-Host "  Luego, volvé a ejecutar este script."
-        Write-Host "`n  Presiona cualquier tecla para salir..."
-        Wait-For-Key | Out-Null
-        exit 0
+        Set-Content -Path $ngrokConfigFile -Value "AUTH_TOKEN=<su_token_de_ngrok>`nTUNNEL_URL=<su_url_de_ngrok>"
+        Write-Host ""
+        Write-Host "  Se creó el archivo de configuración de ngrok: $serverPath\$ngrokConfigFile"
+        Write-Host "  Editá el archivo y agregá tu token de ngrok y la URL del túnel."
+        Write-Host "  Luego debes volver a ejecutar este script."
+        Write-Host "  Tené en cuenta que si se realiza la instalación del servidor de DevOps"
+        Write-Host "  sin agregar el token y URL, el servidor de DevOps no funcionará correctamente."
+        Write-Host "`n  Presione cualquier tecla para continuar..."
+        $null = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        Write-Host ""
+        exit
     }
 }
 
-# Ejecutar curl y crear entorno
-New-Item -Path $serverPath -ItemType Directory -Force | Out-Null
-Set-Location -Path $serverPath
+Execute-Command 'Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/main/assets/Vagrantfile" -OutFile "Vagrantfile"'
 
-Execute-Command "curl -sSOfL https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/main/assets/Vagrantfile"
-
-Write-Host "`n  Instalando $serverLabel..."
+Write-Host "  Instalando $serverLabel..."
+Write-Host ""
 vagrant up
 vagrant reload --provision-with post1,post2,post3
