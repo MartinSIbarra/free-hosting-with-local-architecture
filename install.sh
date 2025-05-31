@@ -112,7 +112,7 @@ execute_command() {
 }
 
 execute_command "curl -sSOfL https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/$branch/assets/Vagrantfile"
-sed -i sed -i "s/repo_branch = \"main\"/repo_branch = \"$branch\"/" Vagrantfile
+sed -i sed -i "s/repo_branch = \"main\"/repo_branch = \"$branch\"/g" Vagrantfile
 echo "  Instalando $server_label..."
 echo ""
 vagrant up && vagrant reload --provision-with post1,post2,post3
