@@ -19,7 +19,7 @@ end
 def get_ngrok_data(host_name, servers)
   ngrok_auth_token = nil
   ngrok_tunnel_url = nil
-  if ENV["VAGRANT_COMMAND"] == "up" || ENV["VAGRANT_COMMAND"] == "provision"
+  if ARGV.include?("provision-with")
     if servers[host_name][:tunnel_config_required]
       ngrok_auth_token = ENV['NGROK_AUTH_TOKEN']
       ngrok_tunnel_url = ENV['NGROK_TUNNEL_URL']
