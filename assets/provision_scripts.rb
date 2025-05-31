@@ -43,7 +43,7 @@ def virtualbox_ga()
   SHELL
 end 
 
-def remote_provision_script(remote_repo, server_type, ngrok_auth_token, ngrok_tunnel_url)
+def remote_provision_script(repo_branch, server_type, ngrok_auth_token, ngrok_tunnel_url)
   return <<-SHELL
     MAX_RETRIES=10
     RETRY_DELAY=5
@@ -77,6 +77,7 @@ def remote_provision_script(remote_repo, server_type, ngrok_auth_token, ngrok_tu
 
     echo "[$(date)] Descarga exitosa del script." | su - vagrant -c "tee -a $LOG_FILE"
     chmod +x "$SCRIPT_FILE"
+    su - vagrant -c "export REPO_BRANCH=#{repo_branch}"
     su - vagrant -c "source $SCRIPT_FILE --server-type=#{server_type} --ngrok-auth-token=#{ngrok_auth_token} --ngrok-tunnel-url=#{ngrok_tunnel_url}"
     rm -rf "$TMP_DIR"
     su - vagrant -c "source /home/vagrant/.bashrc"
