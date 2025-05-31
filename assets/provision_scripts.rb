@@ -43,8 +43,7 @@ def virtualbox_ga()
   SHELL
 end 
 
-def remote_provision_script(repo_branch, remote_repo, server_type)
-  ngrok_data = get_ngrok_data(host, servers)
+def remote_provision_script(repo_branch, remote_repo, server_type, ngrok_data)
   return <<-SHELL
     MAX_RETRIES=10
     RETRY_DELAY=5
