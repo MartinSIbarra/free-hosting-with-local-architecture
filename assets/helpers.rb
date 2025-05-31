@@ -17,18 +17,16 @@ def get_host_name(servers)
 end
 
 def get_ngrok_data(host_name, servers)
-  ngrok_auth_token = nil
-  ngrok_tunnel_url = nil
-  if ARGV.include?("provision-with")
+  ngrok_auth_token = ENV['NGROK_AUTH_TOKEN']
+  ngrok_tunnel_url = ENV['NGROK_TUNNEL_URL']
+  if ARGV.include?("--provision-with")
     if servers[host_name][:tunnel_config_required]
-      ngrok_auth_token = ENV['NGROK_AUTH_TOKEN']
-      ngrok_tunnel_url = ENV['NGROK_TUNNEL_URL']
       if !ngrok_auth_token || ngrok_auth_token.empty? || !ngrok_tunnel_url || ngrok_tunnel_url.empty?
         raise <<~ERROR
-          ❌ ERROR: El sevidor de DevOps requiere la configuracion de ngrok.
-          Se deben exportar las siguientes variables:
-          export AUTH_TOKEN="su_token_de_ngrok"
-          export TUNNEL_URL="su_url_de_ngrok"
+        ❌ ERROR: El sevidor de DevOps requiere la configuracion de ngrok.
+        Se deben exportar las siguientes variables:
+        export NGROK_AUTH_TOKEN="su_token_de_ngrok"
+        export NGROK_TUNNEL_URL="su_url_de_ngrok"
         ERROR
       end
     end

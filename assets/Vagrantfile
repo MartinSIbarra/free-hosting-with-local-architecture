@@ -2,6 +2,11 @@
 repo_branch = "main"
 remote_repo = "https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/#{repo_branch}/assets"
 
+if repo_branch != "main" then
+  puts "Usando rama: #{repo_branch}"
+  puts "Url: #{remote_repo}"
+end
+
 require 'open-uri'
 
 def download_file(url, file)
