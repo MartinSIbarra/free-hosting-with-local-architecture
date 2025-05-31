@@ -72,7 +72,7 @@ exec_until_done() {
 export -f exec_until_done
 
 # Seteo de url para el repositorio remote de los scripts, se asume main si no se encuentra definida la variable de entorno.
-if [ -z $REPO_BRANCH ]; do
+if [ -z $REPO_BRANCH ]; then
   branch="main"
 else
   branch="$REPO_BRANCH"
