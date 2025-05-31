@@ -4,6 +4,7 @@
 - [Objetivo](#objetivo)
 - [Pre-requisitos](#pre-requisitos)
 - [Instalación](#instalación)
+- [Desarrollo](#desarrollo)
 
 ## Objetivo
 El proyecto tiene como objetivo facilitar la creación de servidores para hosting de aplicaciones web. Utiliza **Vagrant** para crear máquinas virtuales: **DevOps**, **Production** y **UAT**, cada una con su propósito:
@@ -45,4 +46,17 @@ Copiar y pegar el siguiente comando en la terminal. Antes de ejecutarlo, debe mo
 
 ```powershell
 $destino="C:\Ruta\Donde\Guardar"; Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/main/install.ps1" -OutFile "$destino\install.ps1"; & "$destino\install.ps1"
+```
+
+## Desarrollo
+El proyecto se basa en obtener los scripts de forma remota desde el repositorio, para realizar pruebas sobre cambios que no se encuentran en la rama "main" se debe setear la variable de entorno **REPO_BRANCH** con el nombre de la rama que se desee utilizar, el siguiente ejemplo aplica a la rama **"feature/nueva"**.
+
+### Linux
+```bash
+export REPO_BRANCH="feature/nueva"
+```
+
+### Windows (powershell)
+```powershell
+$env:REPO_BRANCH = "feature/nueva"
 ```
