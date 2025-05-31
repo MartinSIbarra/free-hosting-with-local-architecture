@@ -57,7 +57,6 @@ shared_folders = [
 Vagrant.configure("2") do |config|
   
   host = get_host_name(servers)
-  ngrok_data = get_ngrok_data(host, servers)
   os = get_operative_system()
   bridge_interface = get_bridge_interface(os)
   guest_additions_iso = get_guest_additions_iso(os)
@@ -85,5 +84,5 @@ Vagrant.configure("2") do |config|
   config.vm.provision "post1", type: "shell", run: "never", inline: accesorios()
   config.vm.provision "post2", type: "shell", run: "never", inline: virtualbox_ga()
   #Aprovisionamiento de la maquina virtual con el script para la configuracion para el servidor
-  config.vm.provision "post3", type: "shell", run: "never", inline: remote_provision_script(repo_branch, remote_repo, servers[host][:server_type], ngrok_data[:ngrok_auth_token], ngrok_data[:ngrok_tunnel_url])
+  config.vm.provision "post3", type: "shell", run: "never", inline: remote_provision_script(repo_branch, remote_repo, servers[host][:server_type])
 end
