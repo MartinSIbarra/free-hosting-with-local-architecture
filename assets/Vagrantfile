@@ -55,8 +55,9 @@ servers = {
 }
 # Configuración de las carpetas compartidas
 shared_folders = [
-  {host: ".", guest: "/home/vagrant/fs"},
+  {host: "./shared_fs", guest: "/home/vagrant/fs"}
 ]
+Dir.mkdir(shared_folder[:host]) unless Dir.exist?(shared_folder[:host])
 
 # Incio del script para la configuracion de la maquina virtual
 Vagrant.configure("2") do |config|

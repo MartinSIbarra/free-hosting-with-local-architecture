@@ -48,8 +48,8 @@ def remote_provision_script(repo_branch, remote_repo, server_type, ngrok_data)
     MAX_RETRIES=10
     RETRY_DELAY=5
     ATTEMPT=1
-    LOG_DIR="$/home/vagrant/logs"
-    TMP_DIR="$/home/vagrant/tmp"
+    LOG_DIR="/home/vagrant/logs"
+    TMP_DIR="/home/vagrant/tmp"
     SCRIPT_NAME="provision"
     LOG_FILE="$LOG_DIR/$SCRIPT_NAME-download.log"
     SCRIPT_FILE="$TMP_DIR/tmp_script.sh"
