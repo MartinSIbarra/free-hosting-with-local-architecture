@@ -17,30 +17,18 @@ def get_host_name(servers)
 end
 
 def get_ngrok_data(host_name, servers)
-  ngrok_auth_token = nil
-  ngrok_tunnel_url = nil
-  if servers[host_name][:tunnel_config_required]
-    # Inicialización de variables
-    config_file = File.join(File.dirname(__FILE__), 'ngrok.conf')
-    if File.exist?(config_file)
-      File.foreach(config_file) do |line|
-        key, value = line.strip.split('=', 2)
-        case key
-        when 'AUTH_TOKEN'
-          ngrok_auth_token = value
-        when 'TUNNEL_URL'
-          ngrok_tunnel_url = value
-        end
-      end
-    end
-    if !ngrok_auth_token || ngrok_auth_token.empty? || !ngrok_tunnel_url || ngrok_tunnel_url.empty?
-      raise <<~ERROR
+  ngrok_auth_token = ENV['NGROK_AUTH_TOKEN']
+  ngrok_tunnel_url = ENV['NGROK_TUNNEL_URL']
+  if ARGV.include?("--provision-with")
+    if servers[host_name][:tunnel_config_required]
+      if !ngrok_auth_token || ngrok_auth_token.empty? || !ngrok_tunnel_url || ngrok_tunnel_url.empty?
+        raise <<~ERROR
         ❌ ERROR: El sevidor de DevOps requiere la configuracion de ngrok.
-        Por favor, cree un archivo 'ngrok.conf' en la misma carpeta que el Vagrantfile.
-        El archivo debe contener las siguientes variables:
-        AUTH_TOKEN="su_token_de_ngrok"
-        TUNNEL_URL="su_url_de_ngrok"
-      ERROR
+        Se deben exportar las siguientes variables:
+        export NGROK_AUTH_TOKEN="su_token_de_ngrok"
+        export NGROK_TUNNEL_URL="su_url_de_ngrok"
+        ERROR
+      end
     end
   end
   return {ngrok_auth_token: ngrok_auth_token, ngrok_tunnel_url: ngrok_tunnel_url}

@@ -1,8 +1,4 @@
 #!/bin/bash
-# Seteo de url para el repositorio remote de los scripts
-remote_repo="https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/main/assets"
-export REMOTE_REPO=$remote_repo
-
 # Valores por defecto
 server_type=""
 ngrok_auth_token=""
@@ -19,7 +15,9 @@ for arg in "$@"; do
       echo "  Uso: $0 --server-type=<tipo> [--ngrok-auth-token=<token>] [--ngrok-tunnel-url=<url>]"
       echo ""
       echo "  --server-type:        Tipos de servidor permitidos: devops, prod, uat"
+      echo ""
       echo "  --ngrok-auth-token:   Token de autenticación para ngrok (obligatorio para --server-type=devops)"
+      echo ""
       echo "  --ngrok-tunnel-url:   URL del túnel ngrok (obligatorio para --server-type=devops)"
       echo ""
       exit 0
@@ -72,6 +70,14 @@ exec_until_done() {
   done
 }
 export -f exec_until_done
+
+# Seteo de url para el repositorio remote de los scripts, se asume main si no se encuentra definida la variable de entorno.
+if [ -z $REPO_BRANCH ]; then
+  branch="main"
+else
+  branch="$REPO_BRANCH"
+fi
+export REMOTE_REPO="https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/$branch/assets"
 
 # Metodo para descargar y ejecutar scripts remotos
 source_remote_script() {
