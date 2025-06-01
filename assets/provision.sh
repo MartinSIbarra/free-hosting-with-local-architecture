@@ -71,16 +71,16 @@ exec_until_done() {
 }
 export -f exec_until_done
 
-# Seteo de url para el repositorio remote de los scripts, se asume main si no se encuentra definida la variable de entorno.
-if [ -z $REPO_BRANCH ]; then
-  branch="main"
-else
-  branch="$REPO_BRANCH"
-fi
-export REMOTE_REPO="https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/$branch/assets"
 
 # Metodo para descargar y ejecutar scripts remotos
 source_remote_script() {
+  # Seteo de url para el repositorio remote de los scripts, se asume main si no se encuentra definida la variable de entorno.
+  if [ -z $REPO_BRANCH ]; then
+    branch="main"
+  else
+    branch="$REPO_BRANCH"
+  fi
+  export REMOTE_REPO="https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/$branch/assets"
   REMOTE_SCRIPT=$REMOTE_REPO/$1
   echo "REMOTE_SCRIPT: $REMOTE_SCRIPT"
   exec_until_done curl -sSfL -O $REMOTE_SCRIPT || { echo "Error descargando $REMOTE_SCRIPT"; exit 1; }
@@ -88,7 +88,9 @@ source_remote_script() {
   chmod +x $SCRIPT
   chown $USER:$USER $SCRIPT
   source $SCRIPT
+  rm $SCRIPT
 }
+export -f source_remote_script
 
 source_remote_script basics.sh
 

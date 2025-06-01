@@ -14,10 +14,6 @@ echo "🔧 > Agregando variables de entorno para DevOps..."
     set -a && source $DEVOPS_ENV && set +a
 echo "✅ > Variables de entorno para DevOps agregadas."
 
-TUNNEL_INSTALL_SCRIPT=$REMOTE_REPO/tunnel-install.sh
-echo "TUNNEL_INSTALL_SCRIPT: $TUNNEL_INSTALL_SCRIPT"
-exec_until_done curl -sSfL $TUNNEL_INSTALL_SCRIPT | bash
+source_remote_script tunnel-install.sh
 
-TUNNEL_CONFIG_SCRIPT=$REMOTE_REPO/tunnel-config.sh
-echo "TUNNEL_CONFIG_SCRIPT: $TUNNEL_CONFIG_SCRIPT"
-exec_until_done curl -sSfL $TUNNEL_CONFIG_SCRIPT | bash
+source_remote_script tunnel-config.sh
