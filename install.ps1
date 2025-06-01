@@ -1,5 +1,3 @@
-# PowerShell Script: install-server.ps1
-
 $showMenu = $true
 $option = ""
 $serverPath = ""
@@ -7,29 +5,102 @@ $serverLabel = ""
 $devopsServerLabel = "DevOps Server"
 $prodServerLabel = "Production Server"
 $uatServerLabel = "UAT Server"
+$input = ""
+$branch = if ($env:REPO_BRANCH) { $env:REPO_BRANCH } else { "main" }
 
-function Show-Menu {
+function Pause($message = "Presiona una tecla para continuar...") {
+    Write-Host ""
+    Write-Host $message
+    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+}
+
+while ($showMenu) {
     Clear-Host
-    Write-Host "___________________________________________________________"
+    Write-Host "___________________________________________________________`n"
     Write-Host ""
     Write-Host " Bienvenido al menú de instalación de servidores virtuales"
     Write-Host " Selecciona una opción para continuar, se generará una "
     Write-Host " máquina virtual con Vagrant y VirtualBox "
-    Write-Host "___________________________________________________________"
+    Write-Host "___________________________________________________________`n"
     Write-Host ""
     Write-Host "  1) $devopsServerLabel"
     Write-Host "  2) $prodServerLabel"
     Write-Host "  3) $uatServerLabel"
-    Write-Host ""
-    Write-Host "  0) Salir"
-    Write-Host ""
-    Write-Host "  Selecciona una opción (1-3) o 0 para salir:"
+
+    if ($input -notin 1,2,3) {
+        Write-Host "`n  0) Salir"
+        Write-Host "`n  Selecciona una opción (1-3) o 0 para salir:"
+    }
+
+    $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    $input = $key.Character
+
+    switch ($input) {
+        "0" {
+            Write-Host "`n  Saliendo... `n"
+            exit
+        }
+        "1" {
+            $serverPath = "devops-server"
+            $serverLabel = $devopsServerLabel
+        }
+        "2" {
+            $serverPath = "prod-server"
+            $serverLabel = $prodServerLabel
+        }
+        "3" {
+            $serverPath = "uat-server"
+            $serverLabel = $uatServerLabel
+        }
+        default {
+            continue
+        }
+    }
+
+    Write-Host "`n  Has elegido la opción $input - $serverLabel"
+
+    if (Test-Path "$serverPath\Vagrantfile") {
+        Write-Host "`n  Ya existe la máquina virtual para esta opción, no se puede crear."
+        Pause
+        continue
+    }
+
+    if ($input -eq "1") {
+        $env:NGROK_AUTH_TOKEN = Read-Host "  - Ingresar token para ngrok"
+        if ($env:NGROK_AUTH_TOKEN) {
+            $env:NGROK_TUNNEL_URL = Read-Host "  - Ingresar URL para ngrok"
+            if (-not $env:NGROK_TUNNEL_URL) {
+                $input = ""
+                continue
+            }
+        }
+    }
+
+    Write-Host "`n  Presiona Enter para confirmar ó ESC para volver al menú."
+    while ($true) {
+        $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        if ($key.VirtualKeyCode -eq 13) {  # Enter
+            $option = $input
+            $showMenu = $false
+            break
+        } elseif ($key.VirtualKeyCode -eq 27) {  # Escape
+            $input = ""
+            break
+        }
+    }
 }
 
-function Execute-Command($command) {
+New-Item -ItemType Directory -Force -Path $serverPath | Out-Null
+Set-Location $serverPath
+
+function Execute-Command {
+    param (
+        [string]$command
+    )
     $maxRetries = 10
     $retryDelay = 5
     $attempt = 1
+
     while ($true) {
         try {
             Invoke-Expression $command
@@ -45,67 +116,16 @@ function Execute-Command($command) {
     }
 }
 
-while ($showMenu) {
-    Show-Menu
-    $input = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown").Character
+# Descargar Vagrantfile
+$rawUrl = "https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/$branch/assets/Vagrantfile"
+Execute-Command "Invoke-WebRequest -Uri '$rawUrl' -OutFile 'Vagrantfile' -UseBasicParsing"
 
-    switch ($input) {
-        '0' {
-            Write-Host "`n  Saliendo..."
-            exit
-        }
-        '1' { $serverPath = "devops-server"; $serverLabel = $devopsServerLabel }
-        '2' { $serverPath = "prod-server"; $serverLabel = $prodServerLabel }
-        '3' { $serverPath = "uat-server"; $serverLabel = $uatServerLabel }
-        default { continue }
-    }
+# Reemplazar rama en Vagrantfile
+(Get-Content Vagrantfile) -replace 'repo_branch = "main"', "repo_branch = `"$branch`"" | Set-Content Vagrantfile
 
-    Write-Host "`n  Has elegido la opción $input - $serverLabel"
-
-    if (Test-Path "$serverPath/Vagrantfile") {
-        Write-Host "  Ya existe la máquina virtual para esta opción, no se puede crear."
-        Write-Host "  Presiona cualquier tecla para volver al menú."
-        $null = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-        continue
-    }
-
-    Write-Host "  Presiona Enter para confirmar ó ESC para volver al menú."
-
-    while ($true) {
-        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-        if ($key.VirtualKeyCode -eq 13) { # Enter
-            $option = $input
-            $showMenu = $false
-            break
-        } elseif ($key.VirtualKeyCode -eq 27) { # ESC
-            break
-        }
-    }
-}
-
-New-Item -ItemType Directory -Force -Path $serverPath | Out-Null
-Set-Location -Path $serverPath
-
-$ngrokConfigFile = "ngrok.conf"
-if ($option -eq "1") {
-    if (-not (Test-Path $ngrokConfigFile)) {
-        Set-Content -Path $ngrokConfigFile -Value "AUTH_TOKEN=<su_token_de_ngrok>`nTUNNEL_URL=<su_url_de_ngrok>"
-        Write-Host ""
-        Write-Host "  Se creó el archivo de configuración de ngrok: $serverPath\$ngrokConfigFile"
-        Write-Host "  Editá el archivo y agregá tu token de ngrok y la URL del túnel."
-        Write-Host "  Luego debes volver a ejecutar este script."
-        Write-Host "  Tené en cuenta que si se realiza la instalación del servidor de DevOps"
-        Write-Host "  sin agregar el token y URL, el servidor de DevOps no funcionará correctamente."
-        Write-Host "`n  Presione cualquier tecla para continuar..."
-        $null = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-        Write-Host ""
-        exit
-    }
-}
-
-Execute-Command 'Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/main/assets/Vagrantfile" -OutFile "Vagrantfile"'
-
-Write-Host "  Instalando $serverLabel..."
+Write-Host "`n  Instalando $serverLabel..."
 Write-Host ""
+
+# Iniciar Vagrant
 vagrant up
 vagrant reload --provision-with post1,post2,post3
