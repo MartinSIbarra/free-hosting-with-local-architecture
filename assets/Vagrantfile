@@ -1,14 +1,22 @@
-# Direccion del repositorio remoto para la creacion de vagrant
+# Direccion del repositorio remoto para la creacion de vagrant, se utilza repo_branch para indicar la rama sobre 
+# la cual se quieren tomar los archivos, se debe cambiar en el caso de querer utilizar una rama distinta de "main"
 repo_branch = "main"
 remote_repo = "https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/#{repo_branch}/assets"
-
 if repo_branch != "main" then
   puts "-> Usando rama: #{repo_branch}"
   puts "-> Url: #{remote_repo}"
 end
 
+# Se deja las variables definidas como placeholder estas lineas seran modificadas de forma automatica por el instalador
+# de ser requerido, en el caso de no usaar el instalador si se desea instalar un servidor de DevOps se deben completar.
+ngrok_data = {
+  ngrok_auth_token: "",
+  ngrok_tunnel_url: ""
+}
+
 require 'open-uri'
 
+# Metodo helper para descargar los scripts requeridos desde el repositorio.
 def download_file(url, file)
   unless File.exist?(file)
     remote_file = "#{url}/#{file}"
@@ -90,5 +98,5 @@ Vagrant.configure("2") do |config|
   config.vm.provision "post1", type: "shell", run: "never", inline: accesorios()
   config.vm.provision "post2", type: "shell", run: "never", inline: virtualbox_ga()
   #Aprovisionamiento de la maquina virtual con el script para la configuracion para el servidor
-  config.vm.provision "post3", type: "shell", run: "never", inline: remote_provision_script(repo_branch, remote_repo, servers[host][:server_type], get_ngrok_data(host, servers))
+  config.vm.provision "post3", type: "shell", run: "never", inline: remote_provision_script(repo_branch, remote_repo, servers[host][:server_type], validate_ngrok_data(host, servers, ngrok_data))
 end

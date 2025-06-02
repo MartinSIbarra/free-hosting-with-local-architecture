@@ -1,4 +1,6 @@
 #!/bin/bash
+remote_repo=$1
+
 echo "🔧 > Actualizando el Package Manager..."
     sudo apt-get update
     sudo apt-get upgrade -y
@@ -25,24 +27,24 @@ echo "✅ > Carpetas de configuraciones, logs y ejecutables agregadas."
 
 echo "🔧 > Agregando variables de entorno..."
 # Variables para obtener los archivos del repositorio remoto
-    REMOTE_BASICS_VARS=$REMOTE_REPO/basics.env
-    BASICS_VARS=$HOME/.config/$(basename $REMOTE_BASICS_VARS)
-    echo "BASICS_VARS: $BASICS_VARS"
-    echo "REMOTE_BASICS_VARS: $REMOTE_BASICS_VARS"
-    exec_until_done curl -sSfL -o $BASICS_VARS $REMOTE_BASICS_VARS || { echo "Error descargando $REMOTE_BASICS_VARS"; exit 1; }
-    echo "set -a && source $BASICS_VARS && set +a" >> $HOME/.config/customs.sh
-    set -a && source $BASICS_VARS && set +a
+    remote_basics_vars=$remote_repo/basics.env
+    basics_vars=$HOME/.config/$(basename $remote_basics_vars)
+    echo "basics_vars: $basics_vars"
+    echo "remote_basics_vars: $remote_basics_vars"
+    exec_until_done curl -sSfL -o $basics_vars $remote_basics_vars || { echo "Error descargando $remote_basics_vars"; exit 1; }
+    echo "set -a && source $basics_vars && set +a" >> $HOME/.config/customs.sh
+    set -a && source $basics_vars && set +a
 echo "✅ > Variables de entorno agregadas."
 
 echo "🔧 > Agregando aliases customs..."
-    REMOTE_ALIAS_SCRIPT=$REMOTE_REPO/aliases.sh
-    ALIAS_SCRIPT="$HOME/.config/$(basename $REMOTE_ALIAS_SCRIPT)"
-    echo "ALIAS_SCRIPT: $ALIAS_SCRIPT"
-    echo "REMOTE_ALIAS_SCRIPT: $REMOTE_ALIAS_SCRIPT"
-    exec_until_done curl -sSfL -o $ALIAS_SCRIPT $REMOTE_ALIAS_SCRIPT || { echo "Error descargando $REMOTE_ALIAS_SCRIPT"; exit 1; }
-    chmod +x $ALIAS_SCRIPT
-    chown $USER:$USER $ALIAS_SCRIPT
-    echo "source $ALIAS_SCRIPT" >> $HOME/.config/customs.sh
+    remote_aliases_script=$remote_repo/aliases.sh
+    aliases_script="$HOME/.config/$(basename $remote_aliases_script)"
+    echo "aliases_script: $aliases_script"
+    echo "remote_aliases_script: $remote_aliases_script"
+    exec_until_done curl -sSfL -o $aliases_script $remote_aliases_script || { echo "Error descargando $remote_aliases_script"; exit 1; }
+    chmod +x $aliases_script
+    chown $USER:$USER $aliases_script
+    echo "source $aliases_script" >> $HOME/.config/customs.sh
 echo "✅ > Alias customs agregados."
 
 echo "🔧 > Configurando locales es_AR.UTF-8 y lenguaje en_US.UTF-8..."
@@ -52,9 +54,9 @@ echo "🔧 > Configurando locales es_AR.UTF-8 y lenguaje en_US.UTF-8..."
     fi
     sudo locale-gen es_AR.UTF-8 en_US.UTF-8
     sudo update-locale
-    REMOTE_LOCALE_VARS=$REMOTE_REPO/locale.env
-    echo "REMOTE_LOCALE_VARS: $REMOTE_LOCALE_VARS"
-    exec_until_done sudo curl -sSfL -o /etc/default/locale $REMOTE_LOCALE_VARS || { echo "Error descargando $REMOTE_LOCALE_VARS"; exit 1; }
+    remote_locale_vars=$remote_repo/locale.env
+    echo "remote_locale_vars: $remote_locale_vars"
+    exec_until_done sudo curl -sSfL -o /etc/default/locale $remote_locale_vars || { echo "Error descargando $remote_locale_vars"; exit 1; }
     set -a && source /etc/default/locale && set +a
 echo "✅ > Locales configurados correctamente."
 
