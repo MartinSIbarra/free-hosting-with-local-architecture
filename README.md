@@ -32,31 +32,33 @@ Para su funcionamiento, el servidor DevOps requiere un token de **ngrok** y un d
 - #### [Ngrok](https://ngrok.com/)
 
 ## Instalación
-El repositorio cuenta con un instalador para **Linux** y **Windows**, que permite facilitar el proceso de instalación con una interfaz de usuario. Solo para la máquina **DevOps** es necesario realizar un paso intermedio para configurar **ngrok**.
+El repositorio cuenta con un instalador para **Linux** y **Windows**, para facilitar el proceso de instalación con una interfaz de usuario. Solo para la máquina **DevOps** es necesario realizar un paso intermedio para configurar **ngrok**.
+Copiar y pegar el siguiente comando en la terminal. 
+Antes de ejecutarlo, debe modificar `"/ruta/donde/guardar"` ó `"C:\Ruta\Donde\Guardar"` por la ruta deseada para descargar el archivo. Este comando descargará el archivo instalador y lo ejecutará para comenzar con la instalación de los servidores.
 
 ### Linux
-Copiar y pegar el siguiente comando en la terminal. Antes de ejecutarlo, debe modificar `"/ruta/donde/guardar"` por la ruta deseada para descargar el archivo. Este comando descargará el archivo `install.sh` y lo ejecutará para comenzar con la instalación de los servidores.
-
 ```bash
 destino="/ruta/donde/guardar"; curl -o "$destino/install.sh" https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/main/install.sh && chmod +x "$destino/install.sh" && "$destino/install.sh"
 ```
 
-### Windows
-Copiar y pegar el siguiente comando en la terminal. Antes de ejecutarlo, debe modificar `"C:\Ruta\Donde\Guardar"` por la ruta deseada para descargar el archivo. Este comando descargará el archivo `install.ps1` y lo ejecutará para comenzar con la instalación de los servidores.
-
+### Windows (powershell)
 ```powershell
 $destino="C:\Ruta\Donde\Guardar"; Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/main/install.ps1" -OutFile "$destino\install.ps1"; & "$destino\install.ps1"
 ```
+Asegúrate de que PowerShell tenga permisos para ejecutar scripts:
+```powershell
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
 
 ## Desarrollo
-El proyecto se basa en obtener los scripts de forma remota desde el repositorio, para realizar pruebas sobre cambios que no se encuentran en la rama "main" se debe setear la variable de entorno **REPO_BRANCH** con el nombre de la rama que se desee utilizar, el siguiente ejemplo aplica a la rama **"feature/nueva"**.
+El proyecto se basa en obtener los scripts de forma remota desde el repositorio, para realizar pruebas sobre cambios que no se encuentran en la rama "main" se debe usar un parametro extra con el nombre de la rama que se desee utilizar, el siguiente ejemplo aplica a la rama **"feature/nueva"**.
 
 ### Linux
 ```bash
-export REPO_BRANCH="feature/nueva"
+destino="/ruta/donde/guardar"; curl -o "$destino/install.sh" https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/main/install.sh && chmod +x "$destino/install.sh" && "$destino/install.sh --branch-name=feature/nueva"
 ```
 
 ### Windows (powershell)
 ```powershell
-$env:REPO_BRANCH = "feature/nueva"
+$destino="C:\Ruta\Donde\Guardar"; Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/main/install.ps1" -OutFile "$destino\install.ps1"; & "$destino\install.ps1 --branch-name=feature/nueva"
 ```
