@@ -38,7 +38,7 @@ Antes de ejecutarlo, debe modificar `"/ruta/donde/guardar"` ó `"C:\Ruta\Donde\G
 
 ### Linux
 ```bash
-destino="/ruta/donde/guardar"; curl -o "$destino/install.sh" https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/main/install.sh && chmod +x "$destino/install.sh" && "$destino/install.sh"
+destino="/ruta/donde/guardar"; curl -o $destino/install.sh https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/main/install.sh && chmod +x $destino/install.sh && $destino/install.sh
 ```
 
 ### Windows (powershell)
@@ -55,7 +55,7 @@ El proyecto se basa en obtener los scripts de forma remota desde el repositorio,
 
 ### Linux
 ```bash
-branch="feature/nueva"; destino="."; curl -o $destino/install.sh https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/$branch/install.sh && chmod +x $destino/install.sh && $destino/install.sh --branch-name=$branch
+branch="feature/nueva"; destino="/ruta/donde/guardar"; curl -o $destino/install.sh https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/$branch/install.sh && chmod +x $destino/install.sh && $destino/install.sh --branch-name=$branch
 ```
 
 ### Windows (powershell)
