@@ -78,9 +78,9 @@ export -f exec_until_done
 
 
 # Metodo para descargar y ejecutar scripts remotos
-source_remote_script() {
+execute_remote_script() {
   echo "----------------------------------------------------------------------------------------------------------------"
-  echo " Metodo: source_remote_script"
+  echo " Metodo: execute_remote_script"
   script=$1
   shift
   remote_script=$remote_repo/$script
@@ -89,13 +89,13 @@ source_remote_script() {
   chmod +x $script
   chown $USER:$USER $script
   echo " --> Ejecutando: $script $@"
-  source $script $@
+  ./$script $@
   echo " --> Borrando: $script"
   rm $script
   echo "----------------------------------------------------------------------------------------------------------------"
 }
-export -f source_remote_script
+export -f execute_remote_script
 
-source_remote_script basics.sh $remote_repo
+execute_remote_script basics.sh $remote_repo
 
-[[ $server_type == "devops" ]] && source_remote_script devops.sh $remote_repo $ngrok_auth_token $ngrok_tunnel_url
+[[ $server_type == "devops" ]] && execute_remote_script devops.sh $remote_repo $ngrok_auth_token $ngrok_tunnel_url
