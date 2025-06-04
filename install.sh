@@ -8,12 +8,31 @@ devops_server_label="DevOps Server"
 prod_server_label="Production Server"
 uat_server_label="UAT Server"
 input=""
+repo_branch="main"
 
-if [ -z "$REPO_BRANCH" ]; then
-    branch="main"
-else 
-    branch="$REPO_BRANCH"
-fi
+# Procesar argumentos
+for arg in "$@"; do
+  case $arg in
+    --branch-name=*) repo_branch="${arg#*=}" ;;
+    --help)
+      echo ""
+      echo "  Uso: $0 [--branch-name=<branch/name>]"
+      echo ""
+      echo "  --branch-name:   Nombre de de la rama que se quiere ejecutar, el parámetro"
+      echo "                   está destinado al uso de ramas distintas a main, para"  
+      echo "                   pruebas de ramas de desarrollo, por ej. para la rama"
+      echo "                   feature/nueva se debe usar el parametro de la siguiente"
+      echo "                   forma: --branch-name=feature/desa"
+      echo ""
+      exit 0
+      ;;
+    *)
+      echo "Argumento no reconocido: $arg, use --help para ver la ayuda."
+      exit 1
+      ;;
+  esac
+done
+remote_repo="https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/$repo_branch/assets"
 
 while [[ "$show_menu" == true ]]; do
     clear
@@ -89,8 +108,6 @@ while [[ "$show_menu" == true ]]; do
             ;;
     esac
 done
-export NGROK_AUTH_TOKEN="$ngrok_auth_token"
-export NGROK_TUNNEL_URL="$ngrok_tunnel_url"
 
 mkdir -p "$server_path"
 cd "$server_path" 
@@ -111,8 +128,12 @@ execute_command() {
     done
 }
 
-execute_command "curl -sSOfL https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/$branch/assets/Vagrantfile"
-sed -i "s/repo_branch = \"main\"/repo_branch = \"$branch\"/g" Vagrantfile
+execute_command "curl -sSOfL $remote_repo/Vagrantfile"
+# Se reemplazan las variables con los valores segun el entorno en el Vagrantfile
+sed -i "s/repo_branch = \"main\"/repo_branch = \"$repo_branch\"/g" Vagrantfile
+sed -i "s/ngrok_auth_token: \"\"/ngrok_auth_token: \"$ngrok_auth_token\"/g" Vagrantfile
+sed -i "s/ngrok_tunnel_url: \"\"/ngrok_tunnel_url: \"$ngrok_tunnel_url\"/g" Vagrantfile
+
 echo "  Instalando $server_label..."
 echo ""
 vagrant up && vagrant reload --provision-with post1,post2,post3

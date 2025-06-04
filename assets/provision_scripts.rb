@@ -45,41 +45,40 @@ end
 
 def remote_provision_script(repo_branch, remote_repo, server_type, ngrok_data)
   return <<-SHELL
-    MAX_RETRIES=10
-    RETRY_DELAY=5
-    ATTEMPT=1
-    LOG_DIR="/home/vagrant/logs"
-    TMP_DIR="/home/vagrant/tmp"
-    SCRIPT_NAME="provision"
-    LOG_FILE="$LOG_DIR/$SCRIPT_NAME-download.log"
-    SCRIPT_FILE="$TMP_DIR/tmp_script.sh"
-    REMOTE_REPO="#{remote_repo}"
+    max_retries=10
+    retry_delay=5
+    attempt=1
+    log_dir="/home/vagrant/logs"
+    tmp_dir="/home/vagrant/tmp"
+    script_name="provision"
+    log_file="$log_dir/$script_name-download.log"
+    script_file="$tmp_dir/tmp_script.sh"
+    remote_repo="#{remote_repo}"
 
-    su - vagrant -c "mkdir -p $LOG_DIR $TMP_DIR"
-    su - vagrant -c "touch $LOG_FILE"
-    su - vagrant -c "touch $SCRIPT_FILE"
+    su - vagrant -c "mkdir -p $log_dir $tmp_dir"
+    su - vagrant -c "touch $log_file"
+    su - vagrant -c "touch $script_file"
 
-    echo "Script de provisionamiento $SCRIPT_NAME-retries"
+    echo "Script de provisionamiento $script_name-retries"
     echo "Inicio del provisionamiento: $(date)"
-    echo "Script de provisionamiento $SCRIPT_NAME-retries" >> "$LOG_FILE"
-    echo "Inicio del provisionamiento: $(date)" >> "$LOG_FILE"
+    echo "Script de provisionamiento $script_name-retries" >> "$log_file"
+    echo "Inicio del provisionamiento: $(date)" >> "$log_file"
 
-    until su - vagrant -c "curl -sSfL $REMOTE_REPO/$SCRIPT_NAME.sh -o $SCRIPT_FILE"; do
-      echo "[$(date)] Intento $ATTEMPT: Error al descargar el script." | su - vagrant -c "tee -a $LOG_FILE"
-      ATTEMPT=$((ATTEMPT + 1))
-      if [ $ATTEMPT -gt $MAX_RETRIES ]; then
-        echo "[$(date)] Fallo tras $MAX_RETRIES intentos. Abortando." | su - vagrant -c "tee -a $LOG_FILE"
+    until su - vagrant -c "curl -sSfL $remote_repo/$script_name.sh -o $script_file"; do
+      echo "[$(date)] Intento $attempt: Error al descargar el script." | su - vagrant -c "tee -a $log_file"
+      attempt=$((attempt + 1))
+      if [ $attempt -gt $max_retries ]; then
+        echo "[$(date)] Fallo tras $max_retries intentos. Abortando." | su - vagrant -c "tee -a $log_file"
         exit 1
         fi
-        echo "Reintentando en $RETRY_DELAY segundos..." | su - vagrant -c "tee -a $LOG_FILE"
-        sleep $RETRY_DELAY
+        echo "Reintentando en $retry_delay segundos..." | su - vagrant -c "tee -a $log_file"
+        sleep $retry_delay
     done
 
-    echo "[$(date)] Descarga exitosa del script." | su - vagrant -c "tee -a $LOG_FILE"
-    chmod +x "$SCRIPT_FILE"
-    su - vagrant -c "export REPO_BRANCH=#{repo_branch}"
-    su - vagrant -c "source $SCRIPT_FILE --server-type=#{server_type} --ngrok-auth-token=#{ngrok_data[:ngrok_auth_token]} --ngrok-tunnel-url=#{ngrok_data[:ngrok_tunnel_url]}"
-    rm -rf "$TMP_DIR"
+    echo "[$(date)] Descarga exitosa del script." | su - vagrant -c "tee -a $log_file"
+    chmod +x "$script_file"
+    su - vagrant -c "source $script_file --server-type=#{server_type} --ngrok-auth-token=#{ngrok_data[:ngrok_auth_token]} --ngrok-tunnel-url=#{ngrok_data[:ngrok_tunnel_url]} --branch-name=#{repo_branch}"
+    rm -rf "$tmp_dir"
     su - vagrant -c "source /home/vagrant/.bashrc"
   SHELL
 end

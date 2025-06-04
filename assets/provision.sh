@@ -3,6 +3,7 @@
 server_type=""
 ngrok_auth_token=""
 ngrok_tunnel_url=""
+repo_branch="main"
 
 # Procesar argumentos
 for arg in "$@"; do
@@ -10,9 +11,10 @@ for arg in "$@"; do
     --server-type=*) server_type="${arg#*=}" ;;
     --ngrok-auth-token=*) ngrok_auth_token="${arg#*=}" ;;
     --ngrok-tunnel-url=*) ngrok_tunnel_url="${arg#*=}" ;;
+    --branch-name=*) repo_branch="${arg#*=}" ;;
     --help)
       echo ""
-      echo "  Uso: $0 --server-type=<tipo> [--ngrok-auth-token=<token>] [--ngrok-tunnel-url=<url>]"
+      echo "  Uso: $0 --server-type=<tipo> [--ngrok-auth-token=<token>] [--ngrok-tunnel-url=<url>] [--branch-name=<branch/name>]"
       echo ""
       echo "  --server-type:        Tipos de servidor permitidos: devops, prod, uat"
       echo ""
@@ -20,6 +22,11 @@ for arg in "$@"; do
       echo ""
       echo "  --ngrok-tunnel-url:   URL del túnel ngrok (obligatorio para --server-type=devops)"
       echo ""
+      echo "  --branch-name:        Nombre de de la rama que se quiere ejecutar, el parámetro"
+      echo "                        está destinado al uso de ramas distintas a main, para"  
+      echo "                        pruebas de ramas de desarrollo, por ej. para la rama"
+      echo "                        feature/nueva se debe usar el parámetro de la siguiente"
+      echo "                        forma: --branch-name=feature/desa"
       exit 0
       ;;
     *)
@@ -28,6 +35,7 @@ for arg in "$@"; do
       ;;
   esac
 done
+remote_repo="https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/$repo_branch/assets"
 
 # Se valida el parametro server-type y en el caso de ser devops se valida el token y la url
 case "$server_type" in
@@ -49,9 +57,6 @@ case "$server_type" in
     ;;
 esac
 
-export NGROK_AUTH_TOKEN=$ngrok_auth_token
-export NGROK_TUNNEL_URL=$ngrok_tunnel_url
-
 # Metodo helper para ejecutar comandos y reintentar en caso de error
 exec_until_done() {
   local n=0
@@ -71,25 +76,21 @@ exec_until_done() {
 }
 export -f exec_until_done
 
-# Seteo de url para el repositorio remote de los scripts, se asume main si no se encuentra definida la variable de entorno.
-if [ -z $REPO_BRANCH ]; then
-  branch="main"
-else
-  branch="$REPO_BRANCH"
-fi
-export REMOTE_REPO="https://raw.githubusercontent.com/MartinSIbarra/free-hosting-with-local-architecture/refs/heads/$branch/assets"
 
 # Metodo para descargar y ejecutar scripts remotos
-source_remote_script() {
-  REMOTE_SCRIPT=$REMOTE_REPO/$1
-  echo "REMOTE_SCRIPT: $REMOTE_SCRIPT"
-  exec_until_done curl -sSfL -O $REMOTE_SCRIPT || { echo "Error descargando $REMOTE_SCRIPT"; exit 1; }
-  SCRIPT=$(basename $REMOTE_SCRIPT)
-  chmod +x $SCRIPT
-  chown $USER:$USER $SCRIPT
-  source $SCRIPT
+execute_remote_script() {
+  script=$1
+  shift
+  remote_script=$remote_repo/$script
+  echo "remote_script: $remote_script"
+  exec_until_done curl -sSfL -O $remote_script || { echo "Error descargando $remote_script"; exit 1; }
+  chmod +x $script
+  chown $USER:$USER $script
+  ./$script $@
+  rm $script
 }
+export -f execute_remote_script
 
-source_remote_script basics.sh
+execute_remote_script basics.sh $remote_repo
 
-[[ $server_type == "devops" ]] && source_remote_script devops.sh
+[[ $server_type == "devops" ]] && execute_remote_script devops.sh $remote_repo $ngrok_auth_token $ngrok_tunnel_url
