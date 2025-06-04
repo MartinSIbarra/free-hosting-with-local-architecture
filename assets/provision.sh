@@ -79,6 +79,8 @@ export -f exec_until_done
 
 # Metodo para descargar y ejecutar scripts remotos
 source_remote_script() {
+  echo "----------------------------------------------------------------------------------------------------------------"
+  echo " Metodo: source_remote_script"
   script=$1
   shift
   remote_script=$remote_repo/$script
@@ -86,8 +88,11 @@ source_remote_script() {
   exec_until_done curl -sSfL -O $remote_script || { echo "Error descargando $remote_script"; exit 1; }
   chmod +x $script
   chown $USER:$USER $script
+  echo " --> Ejecutando: $script $@"
   source $script $@
+  echo " --> Borrando: $script"
   rm $script
+  echo "----------------------------------------------------------------------------------------------------------------"
 }
 export -f source_remote_script
 
