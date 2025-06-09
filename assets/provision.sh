@@ -121,7 +121,7 @@ setup_remote_file() {
 
     echo " |-> method: setup_remote_file >>> file: $file"
     echo " |-> method: setup_remote_file >>> remote_file: $remote_file"
-    exec_until_done curl -sSfL -o $temp_file $remote_file || echo "Error descargando $remote_file" && exit 1
+    exec_until_done curl -sSfL -o $temp_file $remote_file || { echo "Error descargando $remote_file" && exit 1 }
 
     echo " |-> method: setup_remote_file >>> envsubst_flag: $envsubst_flag"
     [[ "$envsubst_flag" == "envsubst-true" ]] && envsubst < $temp_file > $file || cp $temp_file $file
