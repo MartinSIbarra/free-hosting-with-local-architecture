@@ -28,7 +28,7 @@ echo "🔧 > Configurando proxy de Ngrok usando Nginx..." && {
         sudo rm -f '/etc/nginx/sites-enabled/$(basename $file)'
         sudo ln -s '$file /etc/nginx/sites-enabled/'
     }
-    local file_name="ngrok-proxy.conf"
+    file_name="ngrok-proxy.conf"
     setup_remote_file $file_name $remote_repo .config other 'envsubst-false' ngrok_proxy_conf_commands
     sudo nginx -t
 

@@ -7,7 +7,7 @@ duckdns_token="$4"
 email_for_keys="$5"
 
 echo "🔧 > Agregando variables de entorno para DevOps..." && {
-    local file="devops.env"
+    file="devops.env"
     setup_remote_file $file $remote_repo .config other 'envsubst-false'
 
     [[ -n "$ngrok_auth_token" ]] && sed -i "s/XXXngrok-auth-tokenXXX/$ngrok_auth_token/g" $HOME/.config/$file
