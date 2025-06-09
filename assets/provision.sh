@@ -114,14 +114,14 @@ setup_remote_file() {
     local envsubst_flag=$1 && shift
     # command to run after all the other parameters
     local commands_to_run=$@
-
+1 
     local remote_file=$remote_repo/$file_name
     local file=$local_path/$file_name
     local temp_file=$(mktemp)
 
     echo " |-> method: setup_remote_file >>> file: $file"
     echo " |-> method: setup_remote_file >>> remote_file: $remote_file"
-    exec_until_done curl -sSfL -o $temp_file $remote_file || { echo "Error descargando $remote_file" && exit 1 }
+    exec_until_done curl -sSfL -o $temp_file $remote_file || { echo "Error descargando $remote_file" && exit; }
 
     echo " |-> method: setup_remote_file >>> envsubst_flag: $envsubst_flag"
     [[ "$envsubst_flag" == "envsubst-true" ]] && envsubst < $temp_file > $file || cp $temp_file $file
