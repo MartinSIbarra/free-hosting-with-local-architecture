@@ -23,4 +23,4 @@ execute_remote_script tunnel-install.sh $remote_repo
 
 execute_remote_script tunnel-config.sh $remote_repo
 
-execute_remote_script duckdns-install.sh $remote_repo
+execute_remote_script duckdns-config.sh $remote_repo
