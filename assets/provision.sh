@@ -79,14 +79,14 @@ exec_until_done() {
     local max=10
     local delay=5
 
-    echo "$@"
+    echo " |-> method: exec_until_done >>> $@"
     until "$@"; do
         n=$((n + 1))
         if [ $n -ge $max ]; then
-            echo "Comando falló tras $n intentos: $*"
+            echo " |-> method: exec_until_done >>> Comando falló tras $n intentos: $*"
             return 1
         fi
-        echo "Intento $n fallido. Reintentando en $delay segundos..."
+        echo " |-> method: exec_until_done >>> Intento $n fallido. Reintentando en $delay segundos..."
         sleep $delay
     done
 }
