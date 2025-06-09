@@ -24,18 +24,18 @@ echo "🔧 > Agregado carpetas de configuraciones, logs y ejecutables..." && {
 } && echo "✅ > Carpetas de configuraciones, logs y ejecutables agregadas."
 
 echo "🔧 > Agregando variables de entorno..." && {
-    basic_env_commands() {
+    basic_env_commands='
         echo set -a && source $file && set +a >> $HOME/.config/customs.sh
         set -a && source $file && set +a
-    }
+    '
     # Variables para obtener los archivos del repositorio remoto
     setup_remote_file basics.env $remote_repo .config other 'envsubst-false' basic_env_commands
 } && echo "✅ > Variables de entorno agregadas."
 
 echo "🔧 > Agregando aliases customs..." && {
-    aliases_commands() {
+    aliases_commands='
         echo source $file >> $HOME/.config/customs.sh
-    }
+    '
     setup_remote_file aliases.sh $remote_repo bin exec 'envsubst-false' aliases_commands
 } && echo "✅ > Alias customs agregados."
 

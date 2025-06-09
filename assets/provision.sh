@@ -113,7 +113,7 @@ setup_remote_file() {
     # whether to use envsubst or not
     local envsubst_flag=$1 && shift
     # command to run after all the other parameters
-    local commands_to_run=$@
+    local commands_to_run=$1
 
     local remote_file=$remote_repo/$file_name
     local file=$local_path/$file_name
@@ -136,7 +136,7 @@ setup_remote_file() {
     cat $file
     echo "🔎📄 >>> EOF: $file"
 
-    [[ -n $commands_to_run ]] && "$commands_to_run"
+    [[ -n $commands_to_run ]] && eval "$commands_to_run"
 }
 export -f setup_remote_file
 
