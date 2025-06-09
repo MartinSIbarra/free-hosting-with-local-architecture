@@ -99,7 +99,7 @@ setup_remote_file() {
         echo " |-> method: setup_remote_file >>> param $i: $param"
         i=$((i + 1))
     done
-    echo " |-> method: setup_remote_file >>> fin de lista de parametros de entrada:"
+    echo " |-> method: setup_remote_file >>> fin de lista de parametros de entrada."
 
     # this params must be passed always, if not needed use a dummy value
     # name of the script to download
@@ -123,10 +123,12 @@ setup_remote_file() {
     echo " |-> method: setup_remote_file >>> remote_file: $remote_file"
     exec_until_done curl -sSfL -o $temp_file $remote_file || echo "Error descargando $remote_file" && exit 1
 
+    echo " |-> method: setup_remote_file >>> envsubst_flag: $envsubst_flag"
     [[ "$envsubst_flag" == "envsubst-true" ]] && envsubst < $temp_file > $file || cp $temp_file $file
     chown $USER:$USER $file
     rm -f $temp_file
     
+    echo " |-> method: setup_remote_file >>> file_type: $file_type"
     [[ "$file_type" == "exec" ]] && chmod +x $file
     [[ "$file_type" == "service" ]] && sudo ln -s $file /etc/systemd/system/
 
