@@ -107,14 +107,14 @@ setup_remote_file() {
     # remote repository URL
     local remote_repo=$1 && shift
     # local path to save the file
-    [[ "$1" != "." ]] && local local_path=$HOME/$1 && shift || local local_path=$HOME && shift
+    [[ "$1" != "." ]] && local local_path=$HOME/$1 || local local_path=$HOME && shift
     # type of the file (exec or service)
     local file_type=$1 && shift
     # whether to use envsubst or not
     local envsubst_flag=$1 && shift
     # command to run after all the other parameters
     local commands_to_run=$@
-1 
+
     local remote_file=$remote_repo/$file_name
     local file=$local_path/$file_name
     local temp_file=$(mktemp)
