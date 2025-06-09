@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=${USER}
 EnvironmentFile=${HOME}/.config/devops.env
-ExecStart=${HOME}/bin/${NGROK_START_SCRIPT_NAME}
+ExecStart=${HOME}/bin/ngrok-start.sh
 Restart=on-failure
 RestartSec=5
 

@@ -77,7 +77,13 @@ def remote_provision_script(repo_branch, remote_repo, server_type, ngrok_data)
 
     echo "[$(date)] Descarga exitosa del script." | su - vagrant -c "tee -a $log_file"
     chmod +x "$script_file"
-    su - vagrant -c "source $script_file --server-type=#{server_type} --ngrok-auth-token=#{ngrok_data[:ngrok_auth_token]} --ngrok-tunnel-url=#{ngrok_data[:ngrok_tunnel_url]} --branch-name=#{repo_branch}"
+    su - vagrant -c "source $script_file \
+      --server-type=#{server_type} \
+      --ngrok-auth-token=#{ngrok_data[:ngrok_auth_token]} \
+      --ngrok-tunnel-url=#{ngrok_data[:ngrok_tunnel_url]} \
+      --duckdns-token=#{ngrok_data[:duckdns_token]} \
+      --email-for-keys=#{ngrok_data[:email_for_keys]} \
+      --branch-name=#{repo_branch}
     rm -rf "$tmp_dir"
     su - vagrant -c "source /home/vagrant/.bashrc"
   SHELL

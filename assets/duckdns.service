@@ -1,0 +1,7 @@
+[Unit]
+Description=Refresh DuckDNS ip address
+
+[Service]
+Type=oneshot
+EnvironmentFile=${HOME}/.config/devops.env
+ExecStart=${HOME}/bin/duckdns.sh

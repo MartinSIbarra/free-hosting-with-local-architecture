@@ -1,0 +1,10 @@
+[Unit]
+Description=Execute duckdns.service every 2 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=2min
+Unit=duckdns.service
+
+[Install]
+WantedBy=timers.target
