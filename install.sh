@@ -174,4 +174,4 @@ sed -i "s/email_for_keys: \"\"/email_for_keys: \"$email_for_keys\"/g" Vagrantfil
 
 echo "  Instalando $server_label..."
 echo ""
-vagrant up && vagrant reload --provision-with post1,post2,post3
+vagrant up && vagrant reload --provision-with post1,post2,post3 && vagrant reload
