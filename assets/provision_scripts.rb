@@ -83,7 +83,7 @@ def remote_provision_script(repo_branch, remote_repo, server_type, ngrok_data)
       --ngrok-tunnel-url=#{ngrok_data[:ngrok_tunnel_url]} \
       --duckdns-token=#{ngrok_data[:duckdns_token]} \
       --email-for-keys=#{ngrok_data[:email_for_keys]} \
-      --branch-name=#{repo_branch}
+      --branch-name=#{repo_branch}"
     rm -rf "$tmp_dir"
     su - vagrant -c "source /home/vagrant/.bashrc"
   SHELL
