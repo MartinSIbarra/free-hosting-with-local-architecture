@@ -151,7 +151,7 @@ execute_remote_script() {
     local script=$1
     local remote_repo=$2
 
-    set_up_remote_file $script $remote_repo . exec 'envsubst-false'
+    setup_remote_file $script $remote_repo '.' exec 'envsubst-false'
 
     shift
     ./$script $@
