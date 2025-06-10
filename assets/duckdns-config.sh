@@ -9,7 +9,7 @@ echo "🔧 > Instalando servicio para DuckDNS" && {
 
     echo "🌍 > Recuperando servicio systemd para DuckDNS..." && {
         duckdns_service_commands='
-            sed -i "\${HOME}/$HOME/g" $file
+            sed -i "s|\${HOME}|$HOME|g" $file
         '
         setup_remote_file duckdns.service $remote_repo .config service 'envsubst-false' "$duckdns_service_commands"
     }

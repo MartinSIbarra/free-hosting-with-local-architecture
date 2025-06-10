@@ -8,10 +8,10 @@ email_for_keys="$5"
 
 echo "🔧 > Agregando variables de entorno para DevOps..." && {
     devops_env_commands='
-        [[ -n "$ngrok_auth_token" ]] && sed -i "s/XXXngrok-auth-tokenXXX/$ngrok_auth_token/g" $HOME/.config/devops.env && \
-        [[ -n "$ngrok_tunnel_url" ]] && sed -i "s/XXXngrok-tunnel-urlXXX/$ngrok_tunnel_url/g" $HOME/.config/devops.env && \
-        [[ -n "$duckdns_token" ]] && sed -i "s/XXXduckdns-tokenXXX/$duckdns_token/g" $HOME/.config/devops.env && \
-        [[ -n "$email_for_keys" ]] && sed -i "s/XXXemail-for-keysXXX/$email_for_keys/g" $HOME/.config/devops.env && \
+        [[ -n "$ngrok_auth_token" ]] && sed -i "s|XXXngrok-auth-tokenXXX|$ngrok_auth_token|g" $HOME/.config/devops.env && \
+        [[ -n "$ngrok_tunnel_url" ]] && sed -i "s|XXXngrok-tunnel-urlXXX|$ngrok_tunnel_url|g" $HOME/.config/devops.env && \
+        [[ -n "$duckdns_token" ]] && sed -i "s|XXXduckdns-tokenXXX|$duckdns_token|g" $HOME/.config/devops.env && \
+        [[ -n "$email_for_keys" ]] && sed -i "s|XXXemail-for-keysXXX|$email_for_keys|g" $HOME/.config/devops.env && \
         echo "set -a && source $HOME/.config/devops.env && set +a" >> $HOME/.config/customs.sh && \
         set -a && source $HOME/.config/devops.env && set +a
     '
