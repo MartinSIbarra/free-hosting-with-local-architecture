@@ -128,11 +128,11 @@ setup_remote_file() {
     [[ "$file_type" == "exec" ]] && chmod +x "$file"
     [[ "$file_type" == "service" ]] && sudo ln -s "$file" /etc/systemd/system/
 
+    [[ -n "$commands_to_run" ]] && eval "$commands_to_run"
+
     echo "🔎📄 >>> BOF: $file"
     cat "$file"
     echo "🔎📄 >>> EOF: $file"
-
-    [[ -n "$commands_to_run" ]] && eval "$commands_to_run"
 }
 export -f setup_remote_file
 
