@@ -21,9 +21,9 @@ echo "🔧 > Configurando Ngrok service" && {
 echo "🔧 > Configurando proxy de Ngrok usando Nginx..." && {
     echo "🌍 > Recuperando configuración para el proxy Nginx..."
     ngrok_proxy_conf_commands='
-        sed -i "s|${PROD_SERVER}|$PROD_SERVER|g" $file && \
-        sed -i "s|${UAT_SERVER}|$UAT_SERVER|g" $file && \
-        sed -i "s|${DEVOPS_SERVER}|$DEVOPS_SERVER|g" $file && \
+        sed -i "s|\${PROD_SERVER}|$PROD_SERVER|g" $file && \
+        sed -i "s|\${UAT_SERVER}|$UAT_SERVER|g" $file && \
+        sed -i "s|\${DEVOPS_SERVER}|$DEVOPS_SERVER|g" $file && \
         echo "⚙️ > Estableciendo disponibilidad y habilitación del servicio de proxy Nginx..." && \
         sudo rm -f /etc/nginx/sites-available/$(basename $file) && \
         sudo ln -s $file /etc/nginx/sites-available/ && \
