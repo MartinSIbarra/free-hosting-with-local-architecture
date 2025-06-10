@@ -15,7 +15,7 @@ echo "🔧 > Agregando variables de entorno para DevOps..." && {
         echo "set -a && source $HOME/.config/devops.env && set +a" >> $HOME/.config/customs.sh && \
         set -a && source $HOME/.config/devops.env && set +a
     '
-    setup_remote_file devops.env $remote_repo .config other 'envsubst-false'
+    setup_remote_file devops.env $remote_repo .config other 'envsubst-false' "$devops_env_commands"
 
 } && echo "✅ > Variables de entorno para DevOps agregadas."
 

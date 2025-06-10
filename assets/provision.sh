@@ -94,49 +94,45 @@ export -f exec_until_done
 
 setup_remote_file() {
     echo " |-> method: setup_remote_file >>> lista de parametros de entrada:"
-    local i=1
-    for param in "$@"; do
-        echo " |-> method: setup_remote_file >>> param $i: $param"
-        i=$((i + 1))
-    done
+    # this params must be passed always, if not needed must use a dummy value as placeholder
+    # name of the script to download
+    local file_name="$1" && shift
+    echo " |-> method: setup_remote_file >>> file_name: $file_name"
+    # remote repository URL
+    local remote_repo="$1" && shift
+    echo " |-> method: setup_remote_file >>> remote_repo: $remote_repo"
+    # local path to save the file
+    [[ "$1" != "." ]] && local local_path="$HOME/$1" || local local_path="$HOME" && shift
+    echo " |-> method: setup_remote_file >>> local_path: $local_path"
+    # type of the file (exec or service)
+    local file_type="$1" && shift
+    echo " |-> method: setup_remote_file >>> file_type: $file_type"
+    # whether to use envsubst or not
+    local envsubst_flag="$1" && shift
+    echo " |-> method: setup_remote_file >>> envsubst_flag: $envsubst_flag"
+    # command to run after all the other parameters
+    local commands_to_run="$1"
+    echo " |-> method: setup_remote_file >>> commands_to_run: $commands_to_run"
     echo " |-> method: setup_remote_file >>> fin de lista de parametros de entrada."
 
-    # this params must be passed always, if not needed use a dummy value
-    # name of the script to download
-    local file_name=$1 && shift
-    # remote repository URL
-    local remote_repo=$1 && shift
-    # local path to save the file
-    [[ "$1" != "." ]] && local local_path=$HOME/$1 || local local_path=$HOME && shift
-    # type of the file (exec or service)
-    local file_type=$1 && shift
-    # whether to use envsubst or not
-    local envsubst_flag=$1 && shift
-    # command to run after all the other parameters
-    local commands_to_run=$1
-
-    local remote_file=$remote_repo/$file_name
-    local file=$local_path/$file_name
+    local remote_file="$remote_repo/$file_name"
+    local file="$local_path/$file_name"
     local temp_file=$(mktemp)
 
-    echo " |-> method: setup_remote_file >>> file: $file"
-    echo " |-> method: setup_remote_file >>> remote_file: $remote_file"
     exec_until_done curl -sSfL -o $temp_file $remote_file || { echo "Error descargando $remote_file" && exit; }
 
-    echo " |-> method: setup_remote_file >>> envsubst_flag: $envsubst_flag"
-    [[ "$envsubst_flag" == "envsubst-true" ]] && envsubst < $temp_file > $file || cp $temp_file $file
-    chown $USER:$USER $file
-    rm -f $temp_file
-    
-    echo " |-> method: setup_remote_file >>> file_type: $file_type"
-    [[ "$file_type" == "exec" ]] && chmod +x $file
-    [[ "$file_type" == "service" ]] && sudo ln -s $file /etc/systemd/system/
+    [[ "$envsubst_flag" == "envsubst-true" ]] && envsubst < "$temp_file" > "$file" || cp "$temp_file" "$file"
+    chown "$USER:$USER" "$file"
+    rm -f "$temp_file"
+
+    [[ "$file_type" == "exec" ]] && chmod +x "$file"
+    [[ "$file_type" == "service" ]] && sudo ln -s "$file" /etc/systemd/system/
 
     echo "🔎📄 >>> BOF: $file"
-    cat $file
+    cat "$file"
     echo "🔎📄 >>> EOF: $file"
 
-    [[ -n $commands_to_run ]] && eval "$commands_to_run"
+    [[ -n "$commands_to_run" ]] && eval "$commands_to_run"
 }
 export -f setup_remote_file
 
@@ -150,19 +146,19 @@ execute_remote_script() {
     done
     echo " |-> method: execute_remote_script >>> fin de lista de parametros de entrada:"
 
-    local script=$1
-    local remote_repo=$2
+    local script="$1"
+    local remote_repo="$2"
 
-    setup_remote_file $script $remote_repo '.' exec 'envsubst-false'
+    setup_remote_file "$script" "$remote_repo" '.' exec 'envsubst-false'
 
     shift
-    ./$script $@
+    ./"$script" "$@"
 
-    rm $script
+    rm "$script"
 }
 export -f execute_remote_script
 
-execute_remote_script basics.sh $remote_repo
+execute_remote_script basics.sh "$remote_repo"
 
 [[ $server_type == "devops" ]] &&
-    execute_remote_script devops.sh $remote_repo $ngrok_auth_token $ngrok_tunnel_url $duckdns_token $email_for_keys
+    execute_remote_script devops.sh "$remote_repo" "$ngrok_auth_token" "$ngrok_tunnel_url" "$duckdns_token" "$email_for_keys"
