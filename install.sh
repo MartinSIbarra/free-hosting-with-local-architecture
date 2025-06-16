@@ -187,6 +187,8 @@ cd "$server_dir"
 # Helper para ejecutar comandos con reintentos, se utiliza para curl por timeout
 execute_command "curl -sSOfL $remote_repo/Vagrantfile"
 
+devops_server_email_app_token=$(echo "$devops_server_email_app_token" | tr ' ' '-') 
+
 # Se reemplazan las variables con los valores segun el entorno en el Vagrantfile
 sed -i "s/repo_branch = \"main\"/repo_branch = \"$repo_branch\"/g" Vagrantfile
 sed -i "s/ngrok_auth_token: \"\"/ngrok_auth_token: \"$ngrok_auth_token\"/g" Vagrantfile
