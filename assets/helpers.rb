@@ -16,7 +16,7 @@ def get_host_name(servers)
   return host_name
 end
 
-def validate_params(host, servers, basics_params, devops_params)
+def validate_params(host, servers, devops_params)
   ngrok_auth_token = devops_params[:ngrok_auth_token]
   ngrok_tunnel_url = devops_params[:ngrok_tunnel_url]
   if ARGV.include?("--provision-with")

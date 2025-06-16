@@ -9,6 +9,7 @@ devops_server_email=""
 devops_server_email_app_token=""
 email_for_keys=""
 encryption_key=""
+vpn_pwd=""
 repo_branch="main"
 
 # Procesar argumentos
@@ -94,6 +95,10 @@ devops)
     fi
     if [ -z "$encryption_key" ]; then
         echo "El argumento --encryption-key es obligatorio para el --server-type=devops"
+        exit 1
+    fi
+    if [ -z "$vpn_pwd" ]; then
+        echo "El argumento --vpn-pwd es obligatorio para el --server-type=devops"
         exit 1
     fi
     shift
@@ -194,4 +199,4 @@ execute_remote_script basics.sh "$remote_repo"
 
 [[ $server_type == "devops" ]] &&
     execute_remote_script devops.sh "$remote_repo" "$ngrok_auth_token" "$ngrok_tunnel_url" "$duckdns_domain" "$duckdns_token" \
-        "$devops_server_email" "$devops_server_email_app_token" "$email_for_keys" "$encryption_key"
+        "$devops_server_email" "$devops_server_email_app_token" "$email_for_keys" "$encryption_key" "$vpn_pwd"
