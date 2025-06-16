@@ -9,11 +9,17 @@ end
 
 # Se deja las variables definidas como placeholder estas lineas seran modificadas de forma automatica por el instalador
 # de ser requerido, en el caso de no usaar el instalador si se desea instalar un servidor de DevOps se deben completar.
+
 devops_params = {
   ngrok_auth_token: "",
   ngrok_tunnel_url: "",
+  duckdns_domain: "",
   duckdns_token: "",
-  email_for_keys: ""
+  devops_server_email: "",
+  devops_server_email_app_token: "",
+  email_for_keys: "",
+  encryption_key: "",
+  vpn_pwd: ""
 }
 
 require 'open-uri'
@@ -46,21 +52,18 @@ servers = {
     name: "DevOps",
     ip: "192.168.0.170", 
     ssh_port: 2230,
-    tunnel_config_required: true
   },
   "prod-server" => {
     server_type: "prod",
     name: "Producción",
     ip: "192.168.0.171", 
     ssh_port: 2231,
-    tunnel_config_required: false
   },
   "uat-server" => {
     server_type: "uat",
     name: "UAT",
     ip: "192.168.0.172", 
     ssh_port: 2232,
-    tunnel_config_required: false
   }
 }
 # Configuración de las carpetas compartidas
@@ -95,10 +98,11 @@ Vagrant.configure("2") do |config|
       "--medium", guest_additions_iso]
   end
 
+  validate_params(host, servers, devops_params)
   #Aprovisionamiento de la maquina virtual con lo minimo
   config.vm.provision "init", type: "shell", inline: configuracion_inicial()
   config.vm.provision "post1", type: "shell", run: "never", inline: accesorios()
   config.vm.provision "post2", type: "shell", run: "never", inline: virtualbox_ga()
   #Aprovisionamiento de la maquina virtual con el script para la configuracion para el servidor
-  config.vm.provision "post3", type: "shell", run: "never", inline: remote_provision_script(repo_branch, remote_repo, servers[host][:server_type], validate_ngrok_data(host, servers, devops_params))
+  config.vm.provision "post3", type: "shell", run: "never", inline: remote_provision_script(repo_branch, remote_repo, servers[host][:server_type], devops_params)
 end

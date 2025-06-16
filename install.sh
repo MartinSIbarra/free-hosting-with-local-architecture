@@ -28,17 +28,30 @@ show_devops_server_menu() {
     echo -e "\n  Se requieren los siguientes datos para configurar el servidor DevOps:"
     [[ -n "$ngrok_auth_token" ]] && echo "   - Token de Ngrok: $ngrok_auth_token"
     [[ -n "$ngrok_tunnel_url" ]] && echo "   - URL de Ngrok: $ngrok_tunnel_url"
+    [[ -n "$duckdns_domain" ]] && echo "   - Dominio de DuckDNS: $duckdns_domain"
     [[ -n "$duckdns_token" ]] && echo "   - TOKEN de DuckDNS: $duckdns_token"
-    [[ -n "$email_for_keys" ]] && echo "   - Email para VPN keys: $email_for_keys"
+    [[ -n "$devops_server_email" ]] && echo "   - Email para el servidor DevOps: $devops_server_email"
+    [[ -n "$devops_server_email_app_token" ]] && echo "   - Token de aplicación para mail de servidor DevOps: $devops_server_email_app_token"
+    [[ -n "$email_for_keys" ]] && echo "   - Email para recibir el setup de la VPN: $email_for_keys"
+    [[ -n "$encryption_key" ]] && echo "   - Clave de cifrado: $encryption_key"
+
     [[ -z "$ngrok_auth_token" ]] && read -p "   - Ingresar TOKEN para Ngrok: " ngrok_auth_token
     [[ -z "$ngrok_tunnel_url" ]] && read -p "   - Ingresar URL para Ngrok: " ngrok_tunnel_url
+    [[ -z "$duckdns_domain" ]] && read -p "   - Ingresar DOMINIO para DuckDNS: " duckdns_domain
     [[ -z "$duckdns_token" ]] && read -p "   - Ingresar TOKEN para DuckDNS: " duckdns_token
-    [[ -z "$email_for_keys" ]] && read -p "   - Ingresar EMAIL para VPN keys: " email_for_keys
+    [[ -z "$devops_server_email" ]] && read -p "   - Ingresar EMAIL para el servidor DevOps: " devops_server_email
+    [[ -z "$devops_server_email_app_token" ]] && read -p "   - Ingresar TOKEN de aplicación para mail de servidor DevOps: " devops_server_email_app_token
+    [[ -z "$email_for_keys" ]] && read -p "   - Ingresar EMAIL para recibir el setup de la VPN: " email_for_keys
+    [[ -z "$encryption_key" ]] && read -p "   - Ingresar CLAVE de cifrado: " encryption_key
 
     [[ -n "$ngrok_auth_token" ]] && \
     [[ -n "$ngrok_tunnel_url" ]] && \
+    [[ -n "$duckdns_domain" ]] && \
     [[ -n "$duckdns_token" ]] && \
-    [[ -n "$email_for_keys" ]] && {
+    [[ -n "$devops_server_email" ]] && \
+    [[ -n "$devops_server_email_app_token" ]] && \
+    [[ -n "$email_for_keys" ]] && \
+    [[ -n "$encryption_key" ]] && {
         devops_data_complete=true
         echo -e "\n  Todos los datos necesarios han sido proporcionados."
     } || {
@@ -155,8 +168,13 @@ server_label=""
 server=""
 ngrok_auth_token=""
 ngrok_tunnel_url=""
+duckdns_domain=""
 duckdns_token=""
+devops_server_email=""
+devops_server_email_app_token=""
 email_for_keys=""
+encryption_key=""
+
 show_server_menu
 
 mkdir -p "$server_dir"
@@ -169,8 +187,12 @@ execute_command "curl -sSOfL $remote_repo/Vagrantfile"
 sed -i "s/repo_branch = \"main\"/repo_branch = \"$repo_branch\"/g" Vagrantfile
 sed -i "s/ngrok_auth_token: \"\"/ngrok_auth_token: \"$ngrok_auth_token\"/g" Vagrantfile
 sed -i "s/ngrok_tunnel_url: \"\"/ngrok_tunnel_url: \"$ngrok_tunnel_url\"/g" Vagrantfile
+sed -i "s/duckdns_domain: \"\"/duckdns_domain: \"$duckdns_domain\"/g" Vagrantfile
 sed -i "s/duckdns_token: \"\"/duckdns_token: \"$duckdns_token\"/g" Vagrantfile
+sed -i "s/devops_server_email: \"\"/devops_server_email: \"$devops_server_email\"/g" Vagrantfile
+sed -i "s/devops_server_email_app_token: \"\"/devops_server_email_app_token: \"$devops_server_email_app_token\"/g" Vagrantfile
 sed -i "s/email_for_keys: \"\"/email_for_keys: \"$email_for_keys\"/g" Vagrantfile
+sed -i "s/encryption_key: \"\"/encryption_key: \"$encryption_key\"/g" Vagrantfile
 
 echo "  Instalando $server_label..."
 echo ""

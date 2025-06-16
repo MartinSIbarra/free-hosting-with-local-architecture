@@ -16,20 +16,19 @@ def get_host_name(servers)
   return host_name
 end
 
-def validate_ngrok_data(host, servers, ngrok_data)
-  ngrok_auth_token = ngrok_data[:ngrok_auth_token]
-  ngrok_tunnel_url = ngrok_data[:ngrok_tunnel_url]
+def validate_params(host, servers, basics_params, devops_params)
+  ngrok_auth_token = devops_params[:ngrok_auth_token]
+  ngrok_tunnel_url = devops_params[:ngrok_tunnel_url]
   if ARGV.include?("--provision-with")
-    if servers[host][:tunnel_config_required]
+    if servers[host][:server_type] == "devops"
       if !ngrok_auth_token || ngrok_auth_token.empty? || !ngrok_tunnel_url || ngrok_tunnel_url.empty?
         raise <<~ERROR
         ❌ ERROR: El sevidor de DevOps requiere la configuracion de ngrok.
-        Se debe configurar la variable ngrok_data dentro del archivo Vagrantfile
+        Se debe configurar la variable devops_params dentro del archivo Vagrantfile
         ERROR
       end
     end
   end
-  return ngrok_data
 end
 
 

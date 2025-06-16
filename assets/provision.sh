@@ -3,8 +3,12 @@
 server_type=""
 ngrok_auth_token=""
 ngrok_tunnel_url=""
+duckdns_domain=""
 duckdns_token=""
+devops_server_email=""
+devops_server_email_app_token=""
 email_for_keys=""
+encryption_key=""
 repo_branch="main"
 
 # Procesar argumentos
@@ -13,28 +17,40 @@ for arg in "$@"; do
     --server-type=*) server_type="${arg#*=}" ;;
     --ngrok-auth-token=*) ngrok_auth_token="${arg#*=}" ;;
     --ngrok-tunnel-url=*) ngrok_tunnel_url="${arg#*=}" ;;
+    --duckdns-domain=*) duckdns_domain="${arg#*=}" ;;
     --duckdns-token=*) duckdns_token="${arg#*=}" ;;
+    --devops-server-email=*) devops_server_email="${arg#*=}" ;;
+    --devops-server-email-app-token=*) devops_server_email_app_token="${arg#*=}" ;;
     --email-for-keys=*) email_for_keys="${arg#*=}" ;;
+    --encryption-key=*) encryption_key="${arg#*=}" ;;
     --branch-name=*) repo_branch="${arg#*=}" ;;
     --help)
         echo ""
         echo "  Uso: $0 --server-type=<tipo> [--ngrok-auth-token=<token>] [--ngrok-tunnel-url=<url>] [--branch-name=<branch/name>]"
         echo ""
-        echo "  --server-type:        Tipos de servidor permitidos: devops, prod, uat"
+        echo "  --server-type:                   Tipos de servidor permitidos: devops, prod, uat"
         echo ""
-        echo "  --ngrok-auth-token:   Token de autenticación para ngrok (obligatorio para --server-type=devops)"
+        echo "  --ngrok-auth-token:              Token de autenticación para ngrok (obligatorio para --server-type=devops)"
         echo ""
-        echo "  --ngrok-tunnel-url:   URL del túnel ngrok (obligatorio para --server-type=devops)"
+        echo "  --ngrok-tunnel-url:              URL del túnel ngrok (obligatorio para --server-type=devops)"
         echo ""
-        echo "  --duckdns-token:      Token de DuckDNS (obligatorio para --server-type=devops)"
+        echo "  --duckdns-domain:                Dominio de DuckDNS (obligatorio para --server-type=devops)"
         echo ""
-        echo "  --email-for-keys:     Email para las claves de VPN (obligatorio para --server-type=devops)"
+        echo "  --duckdns-token:                 Token de DuckDNS (obligatorio para --server-type=devops)"
         echo ""
-        echo "  --branch-name:        Nombre de de la rama que se quiere ejecutar, el parámetro"
-        echo "                        está destinado al uso de ramas distintas a main, para"
-        echo "                        pruebas de ramas de desarrollo, por ej. para la rama"
-        echo "                        feature/nueva se debe usar el parámetro de la siguiente"
-        echo "                        forma: --branch-name=feature/desa"
+        echo "  --devops-server-email:           Email para el servidor DevOps (obligatorio para --server-type=devops)"
+        echo ""
+        echo "  --devops-server-email-app-token: Token de aplicación para el servidor DevOps (obligatorio para --server-type=devops)"
+        echo ""
+        echo "  --email-for-keys:                Email para las claves de VPN (obligatorio para --server-type=devops)"
+        echo ""
+        echo "  --encryption-key:                Clave de cifrado (obligatorio para --server-type=devops)"
+        echo ""
+        echo "  --branch-name:                   Nombre de de la rama que se quiere ejecutar, el parámetro"
+        echo "                                   está destinado al uso de ramas distintas a main, para"
+        echo "                                   pruebas de ramas de desarrollo, por ej. para la rama"
+        echo "                                   feature/nueva se debe usar el parámetro de la siguiente"
+        echo "                                   forma: --branch-name=feature/desa"
         exit 0
         ;;
     *)
@@ -56,12 +72,28 @@ devops)
         echo "El argumento --ngrok-tunnel-url es obligatorio para el --server-type=devops"
         exit 1
     fi
+    if [ -z "$duckdns_domain" ]; then
+        echo "El argumento --duckdns-domain es obligatorio para el --server-type=devops"
+        exit 1
+    fi
     if [ -z "$duckdns_token" ]; then
         echo "El argumento --duckdns-token es obligatorio para el --server-type=devops"
         exit 1
     fi
+    if [ -z "$devops_server_email" ]; then
+        echo "El argumento --devops-server-email es obligatorio para el --server-type=devops"
+        exit 1
+    fi
+    if [ -z "$devops_server_email_app_token" ]; then
+        echo "El argumento --devops-server-email-app-token es obligatorio para el --server-type=devops"
+        exit 1
+    fi
     if [ -z "$email_for_keys" ]; then
         echo "El argumento --email-for-keys es obligatorio para el --server-type=devops"
+        exit 1
+    fi
+    if [ -z "$encryption_key" ]; then
+        echo "El argumento --encryption-key es obligatorio para el --server-type=devops"
         exit 1
     fi
     shift
@@ -121,7 +153,7 @@ setup_remote_file() {
 
     exec_until_done curl -sSfL -o $temp_file $remote_file || { echo "Error descargando $remote_file" && exit; }
 
-    [[ "$envsubst_flag" == "envsubst-true" ]] && envsubst < "$temp_file" > "$file" || cp "$temp_file" "$file"
+    [[ "$envsubst_flag" == "envsubst-true" ]] && envsubst <"$temp_file" >"$file" || cp "$temp_file" "$file"
     chown "$USER:$USER" "$file"
     rm -f "$temp_file"
 
@@ -161,4 +193,5 @@ export -f execute_remote_script
 execute_remote_script basics.sh "$remote_repo"
 
 [[ $server_type == "devops" ]] &&
-    execute_remote_script devops.sh "$remote_repo" "$ngrok_auth_token" "$ngrok_tunnel_url" "$duckdns_token" "$email_for_keys"
+    execute_remote_script devops.sh "$remote_repo" "$ngrok_auth_token" "$ngrok_tunnel_url" "$duckdns_domain" "$duckdns_token" \
+        "$devops_server_email" "$devops_server_email_app_token" "$email_for_keys" "$encryption_key"

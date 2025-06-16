@@ -37,7 +37,7 @@ def virtualbox_ga()
   SHELL
 end 
 
-def remote_provision_script(repo_branch, remote_repo, server_type, devos_data)
+def remote_provision_script(repo_branch, remote_repo, server_type, devops_params)
   return <<-SHELL
     max_retries=10
     retry_delay=5
@@ -73,10 +73,10 @@ def remote_provision_script(repo_branch, remote_repo, server_type, devos_data)
     chmod +x "$script_file"
     su - vagrant -c "source $script_file \
       --server-type=#{server_type} \
-      --ngrok-auth-token=#{devos_data[:ngrok_auth_token]} \
-      --ngrok-tunnel-url=#{devos_data[:ngrok_tunnel_url]} \
-      --duckdns-token=#{devos_data[:duckdns_token]} \
-      --email-for-keys=#{devos_data[:email_for_keys]} \
+      --ngrok-auth-token=#{devops_params[:ngrok_auth_token]} \
+      --ngrok-tunnel-url=#{devops_params[:ngrok_tunnel_url]} \
+      --duckdns-token=#{devops_params[:duckdns_token]} \
+      --email-for-keys=#{devops_params[:email_for_keys]} \
       --branch-name=#{repo_branch}"
     rm -rf "$tmp_dir"
     su - vagrant -c "source /home/vagrant/.bashrc"
