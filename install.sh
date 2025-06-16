@@ -196,6 +196,7 @@ sed -i "s/duckdns_token: \"\"/duckdns_token: \"$duckdns_token\"/g" Vagrantfile
 sed -i "s/devops_server_email: \"\"/devops_server_email: \"$devops_server_email\"/g" Vagrantfile
 sed -i "s/devops_server_email_app_token: \"\"/devops_server_email_app_token: \"$devops_server_email_app_token\"/g" Vagrantfile
 sed -i "s/email_for_keys: \"\"/email_for_keys: \"$email_for_keys\"/g" Vagrantfile
+sed -i "s/encryption_key: \"\"/encryption_key: \"$encryption_key\"/g" Vagrantfile
 sed -i "s/vpn_pwd: \"\"/vpn_pwd: \"$vpn_pwd\"/g" Vagrantfile
 
 echo "  Instalando $server_label..."

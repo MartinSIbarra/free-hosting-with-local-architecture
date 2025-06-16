@@ -75,10 +75,15 @@ def remote_provision_script(repo_branch, remote_repo, server_type, devops_params
       --server-type=#{server_type} \
       --ngrok-auth-token=#{devops_params[:ngrok_auth_token]} \
       --ngrok-tunnel-url=#{devops_params[:ngrok_tunnel_url]} \
+      --duckdns-domain=#{devops_params[:duckdns_domain]} \
       --duckdns-token=#{devops_params[:duckdns_token]} \
+      --devops-server-email=#{devops_params[:devops_server_email]} \
+      --devops-server-email-app-token=#{devops_params[:devops_server_email_app_token]} \
       --email-for-keys=#{devops_params[:email_for_keys]} \
-      --branch-name=#{repo_branch}"
-    rm -rf "$tmp_dir"
+      --encryption-key=#{devops_params[:encryption_key]} \
+      --vpn-pwd=#{devops_params[:vpn_pwd]}"
+    
+      rm -rf "$tmp_dir"
     su - vagrant -c "source /home/vagrant/.bashrc"
   SHELL
 end
