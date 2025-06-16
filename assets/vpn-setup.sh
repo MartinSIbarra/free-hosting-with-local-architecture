@@ -2,7 +2,7 @@
 remote_repo="$1"
 duckdns_domain="$2"
 devops_server_email="$3"
-devops_server_email_app_token="$4"
+devops_server_email_app_token=$(echo "$4" | tr '-' ' ')
 email_for_keys="$5"
 encryption_key="$6"
 vpn_pwd="$7"
