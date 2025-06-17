@@ -24,6 +24,7 @@ for arg in "$@"; do
     --devops-server-email-app-token=*) devops_server_email_app_token="${arg#*=}" ;;
     --email-for-keys=*) email_for_keys="${arg#*=}" ;;
     --encryption-key=*) encryption_key="${arg#*=}" ;;
+    --vpn-pwd=*) vpn_pwd="${arg#*=}" ;;
     --branch-name=*) repo_branch="${arg#*=}" ;;
     --help)
         echo ""
@@ -46,6 +47,8 @@ for arg in "$@"; do
         echo "  --email-for-keys:                Email para las claves de VPN (obligatorio para --server-type=devops)"
         echo ""
         echo "  --encryption-key:                Clave de cifrado (obligatorio para --server-type=devops)"
+        echo ""
+        echo "  --vpn-pwd:                       Contraseña para acceso ssh en la VPN (obligatorio para --server-type=devops)"
         echo ""
         echo "  --branch-name:                   Nombre de de la rama que se quiere ejecutar, el parámetro"
         echo "                                   está destinado al uso de ramas distintas a main, para"
