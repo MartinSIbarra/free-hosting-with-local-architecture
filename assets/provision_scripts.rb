@@ -73,6 +73,7 @@ def remote_provision_script(repo_branch, remote_repo, server_type, devops_params
     chmod +x "$script_file"
     su - vagrant -c "source $script_file \
       --server-type=#{server_type} \
+      --branch-name=#{repo_branch} \
       --ngrok-auth-token=#{devops_params[:ngrok_auth_token]} \
       --ngrok-tunnel-url=#{devops_params[:ngrok_tunnel_url]} \
       --duckdns-domain=#{devops_params[:duckdns_domain]} \
