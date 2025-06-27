@@ -50,20 +50,20 @@ servers = {
   "devops-server" => { 
     server_type: "devops",
     name: "DevOps",
-    ip: "192.168.0.170", 
-    ssh_port: 2230,
+    ip: "192.168.0.171", 
+    ssh_port: 22171,
   },
   "prod-server" => {
     server_type: "prod",
     name: "Producción",
-    ip: "192.168.0.171", 
-    ssh_port: 2231,
+    ip: "192.168.0.172", 
+    ssh_port: 22172,
   },
   "uat-server" => {
     server_type: "uat",
     name: "UAT",
-    ip: "192.168.0.172", 
-    ssh_port: 2232,
+    ip: "192.168.0.173", 
+    ssh_port: 22173,
   }
 }
 # Configuración de las carpetas compartidas
@@ -96,6 +96,9 @@ Vagrant.configure("2") do |config|
       "--port", "2", "--device", "0",
       "--type", "dvddrive",
       "--medium", guest_additions_iso]
+    if server_type == "devops" then
+      vb.customize ["modifyvm", :id, "--natpf1", "udp-fwd,udp,,51820,,51820"]
+    end
   end
 
   validate_params(host, servers, devops_params)
